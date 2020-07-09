@@ -67,3 +67,32 @@ istioctl manifest apply -f istio/istio-manifest.yaml
 ```shell script
 kubectl apply -f istio/defaults.yaml
 ```
+
+Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
+
+```yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: 32080
+      targetPort: 8080
+  selector:
+    app: test
+```
+
+И сделать его проброс с помощью дополнительного флага
+при подключении к виртуальной машине по ssh:
+
+```yaml
+vagrant ssh -- -L 32080:localhost:32000
+```
+
+Здесь `32080` - порт виртуальной машины, `32000` - порт хоста.
+Сервис будет доступен по адресу `localhost:32000`.
