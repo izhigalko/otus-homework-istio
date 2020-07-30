@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: az-otus-echo-go
+spec:
+  selector:
+    app: az-otus-echo-go
+  ports:
+    - protocol: TCP
+      nodePort: 30081
+      port: 8000
+      targetPort: web
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: az-otus-echo-go-deployment
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: az-otus-echo-go
+  template:
+    metadata:
+      labels:
+        app: az-otus-echo-go
+    spec:
+      containers:
+        - name: az-otus-echo-go
+          image: agzhur/az-otus-echo-go:1.0
+          ports:
+            - name: web
+              containerPort: 8000
+          livenessProbe:
+            httpGet:
+              port: 8000
+              path: /
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
