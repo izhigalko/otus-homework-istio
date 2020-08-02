@@ -109,7 +109,7 @@ spec:
     mixer:
       adapters:
         prometheus:
-          enabled: true
+          enabled: false
 
     tracing:
       provider: jaeger
