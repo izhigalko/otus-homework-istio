@@ -1,0 +1,66 @@
+# Default values for otuslabauth.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+fullnameOverride: examination
+replicaCount: 1
+image:
+  repository: eugeniyas/otusarchsrvmedexamination
+  tag: v1
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+  # Optionally specify an array of imagePullSecrets.
+  # Secrets must be manually created in the namespace.
+  # ref: https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+  #
+  # This uses credentials from secret "myRegistryKeySecretName".
+  # - name: myRegistryKeySecretName
+service:
+  type: NodePort
+  port: 9000
+
+probes:
+  enabled: false
+
+ingress:
+  enabled: true
+  annotations:
+    # kubernetes.io/tls-acme: "true"
+  paths: ["/"]
+  hosts:
+    - arch.homework
+  tls: []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+secrets:
+  # Optionally specify a set of secret objects whose values
+  # will be injected as environment variables by default.
+  # You should add this section to a file like secrets.yaml
+  # that is explicitly NOT committed to source code control
+  # and then include it as part of your helm install step.
+  # ref: https://kubernetes.io/docs/concepts/configuration/secret/
+  #
+  # This creates a secret "mysecret" and injects "mypassword"
+  # as the environment variable mysecret_mypassword=password.
+  # mysecret:
+  #   mypassword: password
+  mysecret:
+    CONNECTION_STR: Data Source=10.0.0.10;Initial Catalog=otusdb_examination;Integrated Security=False;User ID=sa;Password=Psd1234%
+    SA_PASSWORD: Psd1234%
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
