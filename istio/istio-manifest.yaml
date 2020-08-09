@@ -55,7 +55,7 @@ spec:
       enabled: true
 
     kiali: # Панель управления
-      enabled: false
+      enabled: true
       k8s:
         replicaCount: 1
 
@@ -130,7 +130,10 @@ spec:
       service:
         nodePort:
           port: 32082
-
+    kiai:
+      service:
+        nodePort:
+          port: 32085
     cni:
       cniBinDir: /opt/cni/bin
       cniConfDir: /etc/cni/net.d
