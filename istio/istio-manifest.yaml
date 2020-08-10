@@ -97,14 +97,16 @@ spec:
       enableProtocolSniffingForInbound: true
       enableProtocolSniffingForOutbound: true
 
+    kiali:
+      createDemoSecret: true
     telemetry:
-      enabled: false
+      enabled: true
       v1:
-        enabled: false
+        enabled: true
       v2:
-        enabled: false
+        enabled: true
         prometheus:
-          enabled: false
+          enabled: true
 
     mixer:
       adapters:
