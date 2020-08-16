@@ -55,7 +55,7 @@ spec:
       enabled: true
 
     kiali: # Панель управления
-      enabled: false
+      enabled: true
       k8s:
         replicaCount: 1
 
@@ -130,6 +130,9 @@ spec:
       service:
         nodePort:
           port: 32082
+
+    kiali: 
+      createDemoSecret: true
 
     cni:
       cniBinDir: /opt/cni/bin
