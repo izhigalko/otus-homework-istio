@@ -103,11 +103,11 @@ spec:
     telemetry:
       enabled: true
       v1:
-        enabled: false
+        enabled: true
       v2:
         enabled: true
         prometheus:
-          enabled: false
+          enabled: true
 
     mixer:
       adapters:
