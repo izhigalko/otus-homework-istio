@@ -104,7 +104,7 @@ spec:
       v2:
         enabled: true
         prometheus:
-          enabled: false
+          enabled: true
 
     mixer:
       adapters:

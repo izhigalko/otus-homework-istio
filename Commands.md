@@ -1,6 +1,6 @@
 ```bash
 Create
-istioctl manifest apply -f istio-manifest.yaml
+istioctl manifest apply -f istio/istio-manifest.yaml
 
 Delete
 istioctl manifest generate -f istio-manifest.yaml | kubectl delete -f -
