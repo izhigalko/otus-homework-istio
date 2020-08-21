@@ -30,7 +30,6 @@ Vagrant.configure("2") do |config|
 
     master.vm.provision "file", source: "istio", destination: "istio"
     master.vm.provision "file", source: "app", destination: "app"
-    master.vm.provision "file", source: "manage-traffic", destination: "manage-traffic"
     master.vm.provision "file", source: "proxy-config", destination: "proxy-config"
 
     config.vm.network "forwarded_port", guest: 32080, host: 32080
@@ -51,7 +50,6 @@ Vagrant.configure("2") do |config|
       mkdir -p /home/vagrant/.kube
       sudo cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
       sudo chown -Rf $(id -u vagrant):$(id -g vagrant) /home/vagrant/.kube
-      sudo docker build -t proxy-app -f /home/vagrant/app/src/Dockerfile /home/vagrant/app/src/
       SHELL
   end
 end
