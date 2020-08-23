@@ -6,3 +6,4 @@ metadata:
 spec:
   mtls:
     mode: DISABLE # Отключаем шифрование трафика на прокси
+
