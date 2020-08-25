@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  bomber_service:
+    image: vladraven/otus_istio_projects_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
