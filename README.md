@@ -35,7 +35,7 @@ vagrant ssh
 
 Карта сервисов в Kiali выглядит таким образом:
 
-![Карта сервисов](kiali-service-map.png)
+![Карта сервисов](kiali-service-map-real.png)
 
 ## Инструкция по выполнению задания
 
