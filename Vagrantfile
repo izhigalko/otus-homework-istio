@@ -31,6 +31,10 @@ Vagrant.configure("2") do |config|
 
     config.vm.synced_folder "istio/", "/home/vagrant/istio"
 
+    config.vm.network "forwarded_port", guest: 32080, host: 32080
+    config.vm.network "forwarded_port", guest: 32081, host: 32081
+    config.vm.network "forwarded_port", guest: 41503, host: 41503    
+
     master.vm.provision "shell", inline: <<-SHELL
       sudo kubeadm init --apiserver-advertise-address=10.0.1.10 --pod-network-cidr=10.244.1.0/16
       mkdir -p $HOME/.kube

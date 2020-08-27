@@ -7,4 +7,16 @@ vagrant ssh -- -L 32081:localhost:32081
 vagrant ssh -- -L 32000:localhost:32080
 vagrant ssh -- -L 37703:localhost:37703
 
+vagrant ssh -- -L 41503:localhost:41503
+
+istioctl manifest apply -f istio/istio-manifest.yaml
+kubectl apply -f istio/defaults.yaml
+kubectl apply -f ./istio/app/echoserver.yaml
+kubectl get po -l "app=echoserver"
+
+sudo docker build -t proxy-app:latest -f ./istio/app/src/Dockerfile ./istio//app/src/
+kubectl apply -f istio/app/proxy-app.yaml
+
+kubectl -n istio-system get svc kiali
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.7/samples/addons/kiali.yaml
+istioctl dashboard kiali
