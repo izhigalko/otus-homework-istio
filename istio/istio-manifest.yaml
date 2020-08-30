@@ -98,13 +98,11 @@ spec:
       enableProtocolSniffingForOutbound: true
 
     telemetry:
-      enabled: false
-      v1:
-        enabled: false
+      enabled: true
       v2:
-        enabled: false
+        enabled: true
         prometheus:
-          enabled: false
+          enabled: true
 
     kiali:
       createDemoSecret: true
