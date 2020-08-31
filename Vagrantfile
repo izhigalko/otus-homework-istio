@@ -30,6 +30,7 @@ Vagrant.configure("2") do |config|
     master.vm.hostname = "k8s-master"
 
     config.vm.synced_folder "istio/", "/home/vagrant/istio"
+    config.vm.synced_folder "app/", "/home/vagrant/app"
 
     master.vm.provision "shell", inline: <<-SHELL
       sudo kubeadm init --apiserver-advertise-address=10.0.0.10 --pod-network-cidr=10.244.0.0/16
