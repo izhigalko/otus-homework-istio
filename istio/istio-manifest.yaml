@@ -55,7 +55,7 @@ spec:
       enabled: true
 
     kiali: # Панель управления
-      enabled: false
+      enabled: true
       k8s:
         replicaCount: 1
 
@@ -98,13 +98,13 @@ spec:
       enableProtocolSniffingForOutbound: true
 
     telemetry:
-      enabled: false
+      enabled: true
       v1:
         enabled: false
       v2:
-        enabled: false
+        enabled: true
         prometheus:
-          enabled: false
+          enabled: true
 
     mixer:
       adapters:
@@ -130,6 +130,16 @@ spec:
       service:
         nodePort:
           port: 32082
+    
+    jaeger:
+      service:
+        nodePort:
+          port: 32083    
+    
+    kiali:
+      service:
+        nodePort:
+          port: 32084
 
     cni:
       cniBinDir: /opt/cni/bin
