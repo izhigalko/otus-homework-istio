@@ -34,7 +34,7 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: rined/proxy-app:v0
+      app: proxy-app
       version: "1"
   template:
     metadata:
@@ -44,7 +44,7 @@ spec:
     spec:
       containers:
         - name: proxy-app
-          image: proxy-app
+          image: rined/proxy-app:v0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

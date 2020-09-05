@@ -131,16 +131,6 @@ spec:
         nodePort:
           port: 32082
     
-    jaeger:
-      service:
-        nodePort:
-          port: 32083    
-    
-    kiali:
-      service:
-        nodePort:
-          port: 32084
-
     cni:
       cniBinDir: /opt/cni/bin
       cniConfDir: /etc/cni/net.d
@@ -149,4 +139,3 @@ spec:
         - kube-system
       repair:
         deletePods: false
-
