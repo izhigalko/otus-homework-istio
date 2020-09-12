@@ -23,11 +23,11 @@ spec:
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
       - name: istio-ingressgateway
-        enabled: false
+        enabled: true
 
     egressGateways: # Общаая точка для выхода трафика из Service mesh
       - name: istio-egressgateway
-        enabled: false
+        enabled: true
 
     pilot: # Управление конфигурацией proxy
       enabled: true
@@ -43,7 +43,7 @@ spec:
 
   addonComponents:
     grafana: # Дашборд
-      enabled: false
+      enabled: true
 
     prometheus: # Система мониторинга
       enabled: true
@@ -55,9 +55,11 @@ spec:
       enabled: true
 
     kiali: # Панель управления
-      enabled: false
+      enabled: true      
       k8s:
         replicaCount: 1
+        service:
+          type: NodePort
 
   meshConfig: # Настройки Service mesh
 
@@ -98,13 +100,13 @@ spec:
       enableProtocolSniffingForOutbound: true
 
     telemetry:
-      enabled: false
+      enabled: true
       v1:
-        enabled: false
+        enabled: true
       v2:
-        enabled: false
+        enabled: true
         prometheus:
-          enabled: false
+          enabled: true
 
     mixer:
       adapters:
@@ -129,7 +131,7 @@ spec:
     prometheus:
       service:
         nodePort:
-          port: 32082
+          port: 32082 
 
     cni:
       cniBinDir: /opt/cni/bin

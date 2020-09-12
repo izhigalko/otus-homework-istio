@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "product-search-service.fullname" . }}
+  labels:
+    {{- include "product-search-service.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: "http"
+      protocol: TCP
+      name: "http"
+  selector:
+    {{- include "product-search-service.selectorLabels" . | nindent 4 }}  
+
+---  
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "order-service.fullname" . }}
+  labels:
+  {{- include "order-service.selectorLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: "http"
+      protocol: TCP
+      name: "http"
+  selector:
+  {{- include "order-service.selectorLabels" . | nindent 4 }} 
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "delivery-service.fullname" . }}
+  labels:
+  {{- include "delivery-service.selectorLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: "http"
+      protocol: TCP
+      name: "http"
+  selector:
+  {{- include "delivery-service.selectorLabels" . | nindent 4 }}
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "payment-service.fullname" . }}
+  labels:
+  {{- include "payment-service.selectorLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: "http"
+      protocol: TCP
+      name: "http"
+  selector:
+  {{- include "payment-service.selectorLabels" . | nindent 4 }}
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "warehouse-service.fullname" . }}
+  labels:
+  {{- include "warehouse-service.selectorLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: "http"
+      protocol: TCP
+      name: "http"
+  selector:
+  {{- include "warehouse-service.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,114 @@
+postgresql:
+  enabled: true
+  postgresqlUsername: "db_user"
+  postgresqlPassword: "Zu0yAx"
+  service:
+    port: "5432"
+  image:
+    tag: "latest"
+  persistence:    
+    existingClaim: postgres-pvc
+  volumePermissions: 
+    enabled: true
+  master:
+    podAnnotations:
+      sidecar.istio.io/inject: "false"
+#  slave:
+#    podAnnotations:
+#      sidecar.istio.io/inject: "false"
+#  metrics:
+#    enabled: true
+#    serviceMonitor:
+#      enabled: true
+#      namespace: monitoring
+#      interval: 30s
+#      scrapeTimeout: 10s
+  
+productSearchService:
+  image:
+    repository: "stilux/product-search-service"
+    pullPolicy: Always
+  replicaCount: 1
+  configPath: "/app/config"
+  logLevel: "Information"
+  allowedHosts: "*"
+  database: "ProductDB"
+  cache:
+    enabled: true
+    sizeLimit: 100  
+    
+deliveryService:
+  image:
+    repository: "stilux/delivery-service"
+    pullPolicy: Always
+  replicaCount: 1
+  configPath: "/app/config"
+  logLevel: "Information"
+  allowedHosts: "*"
+  database: "DeliveryDB"
+  
+orderService:
+  image:
+    repository: "stilux/order-service"
+    pullPolicy: Always
+  replicaCount: 1
+  configPath: "/app/config"
+  logLevel: "Information"
+  allowedHosts: "*"
+  database: "OrderDB"
+
+paymentService:
+  image:
+    repository: "stilux/payment-service"
+    pullPolicy: Always
+  replicaCount: 1
+  configPath: "/app/config"
+  logLevel: "Information"
+  allowedHosts: "*"
+  database: "PaymentDB"
+  
+warehouseService:
+  image:
+    repository: "stilux/warehouse-service"
+    pullPolicy: Always
+  replicaCount: 1
+  configPath: "/app/config"
+  logLevel: "Information"
+  allowedHosts: "*"
+  database: "WarehouseDB"
+
+authServer:
+  image:
+    repository: "stilux/auth-server"
+    pullPolicy: Always
+  replicaCount: 1
+  configPath: "/app/config"
+  logLevel: "Information"
+  allowedHosts: "*"
+  database: "IdentityServer"
+  
+apiGateway:
+  image:
+    repository: "stilux/auth-api-gateway"
+    pullPolicy: Always
+  replicaCount: 1
+  configPath: "/app/config"
+  logLevel: "Information"
+  allowedHosts: "*"
+  nodePort: 30000
+  
+service:
+  type: "ClusterIP"
+  port: 80
+  
+ingress:
+  enabled: true
+  host: arch.homework  
+  
+messageBroker:
+  user: "rmq_user"
+  password: "hSuNqQ"
+  port: 5672
+  
+log:  
+  level: "Information"

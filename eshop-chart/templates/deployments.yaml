@@ -1,0 +1,299 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "product-search-service.fullname" . }}
+  labels:
+  {{- include "product-search-service.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.productSearchService.replicaCount }}
+  selector:
+    matchLabels:
+  {{- include "product-search-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "product-search-service.selectorLabels" . | nindent 8 }}
+      annotations:
+    {{- include "eshop-chart.configChangeDetection" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "product-search-service.fullImageName" . }}
+          imagePullPolicy: {{ .Values.productSearchService.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.productSearchService.configPath | quote }}
+              readOnly: true
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: product-search-service-appsettings.json
+                      path: appsettings.json
+              - secret:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: product-search-service-appsettings.secrets.json
+                      path: appsettings.secrets.json
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "order-service.fullname" . }}
+  labels:
+  {{- include "order-service.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.orderService.replicaCount }}
+  selector:
+    matchLabels:
+  {{- include "order-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "order-service.selectorLabels" . | nindent 8 }}
+      annotations:
+    {{- include "eshop-chart.configChangeDetection" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "order-service.fullImageName" . }}
+          imagePullPolicy: {{ .Values.orderService.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.orderService.configPath | quote }}
+              readOnly: true
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: service-appsettings.json
+                      path: appsettings.json
+              - secret:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: order-service-appsettings.secrets.json
+                      path: appsettings.secrets.json
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "delivery-service.fullname" . }}
+  labels:
+  {{- include "delivery-service.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deliveryService.replicaCount }}
+  selector:
+    matchLabels:
+  {{- include "delivery-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "delivery-service.selectorLabels" . | nindent 8 }}
+      annotations:
+    {{- include "eshop-chart.configChangeDetection" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "delivery-service.fullImageName" . }}
+          imagePullPolicy: {{ .Values.deliveryService.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.deliveryService.configPath | quote }}
+              readOnly: true
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: service-appsettings.json
+                      path: appsettings.json
+              - secret:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: delivery-service-appsettings.secrets.json
+                      path: appsettings.secrets.json
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "payment-service.fullname" . }}
+  labels:
+  {{- include "payment-service.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.paymentService.replicaCount }}
+  selector:
+    matchLabels:
+  {{- include "payment-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "payment-service.selectorLabels" . | nindent 8 }}
+      annotations:
+    {{- include "eshop-chart.configChangeDetection" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "payment-service.fullImageName" . }}
+          imagePullPolicy: {{ .Values.paymentService.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.paymentService.configPath | quote }}
+              readOnly: true
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: service-appsettings.json
+                      path: appsettings.json
+              - secret:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: payment-service-appsettings.secrets.json
+                      path: appsettings.secrets.json
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "warehouse-service.fullname" . }}
+  labels:
+  {{- include "warehouse-service.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.warehouseService.replicaCount }}
+  selector:
+    matchLabels:
+  {{- include "warehouse-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "warehouse-service.selectorLabels" . | nindent 8 }}
+      annotations:
+    {{- include "eshop-chart.configChangeDetection" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "warehouse-service.fullImageName" . }}
+          imagePullPolicy: {{ .Values.warehouseService.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.warehouseService.configPath | quote }}
+              readOnly: true
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: service-appsettings.json
+                      path: appsettings.json
+              - secret:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: warehouse-service-appsettings.secrets.json
+                      path: appsettings.secrets.json
