@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gateway.fullname" . }}
+  labels:
+    {{- include "gateway.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.apiGateway.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:    
+      labels:
+        {{- include "gateway.selectorLabels" . | nindent 8 }}        
+      annotations:
+        {{- include "eshop-chart.configChangeDetection" . | nindent 8 }}
+    spec:      
+      containers:
+        - name: {{ .Chart.Name }}          
+          image: {{ include "gateway.fullImageName" . }}
+          imagePullPolicy: {{ .Values.apiGateway.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.apiGateway.configPath | quote }}
+              readOnly: true                   
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: gateway-appsettings.json
+                      path: appsettings.json
+                    - key: ocelot.json
+                      path: ocelot.json
+              - secret:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: gateway-appsettings.secrets.json
+                      path: appsettings.secrets.json

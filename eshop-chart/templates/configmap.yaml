@@ -1,0 +1,197 @@
+{{/*---*/}}
+{{- $authServer := include "auth-server.fullname" . -}}
+{{- $gateway := include "gateway.fullname" . -}}
+{{- $productSearchService := include "product-search-service.fullname" . -}}
+{{- $orderService := include "order-service.fullname" . -}}  
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "eshop-chart.fullname" . }}
+  labels:
+    {{- include "eshop-chart.selectorLabels" . | nindent 4 }}
+data:
+  service-appsettings.json: |-
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": {{ .Values.log.level | quote }},
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "DbInitialize": {
+        "ItemsCount": 5000
+      },
+      "AllowedHosts": "*"      
+    }
+  gateway-appsettings.json: |-
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": {{ .Values.log.level | quote }},
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "AllowedHosts": "*"
+    }
+  product-search-service-appsettings.json: |-
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": {{ .Values.log.level | quote }},
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "AllowedHosts": "*",
+      "Cache": {
+          "Enabled": {{ .Values.productSearchService.cache.enabled }},
+          "Period": "00:05:00",
+          "SizeLimit": {{ .Values.productSearchService.cache.sizeLimit }}
+      },
+      "DbInitialize": {
+          "ItemsCount": 5000
+      }
+    }    
+  auth-server-appsettings.json: |-
+    {
+      "IdentityServer": {
+        "BaseUrl": "http://localhost"
+      }
+    }
+  ocelot.json: |-
+    {
+      "Routes": [
+      {
+        "DownstreamPathTemplate": "/api/v1/orders/{id}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $orderService | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/orders/{id}",
+        "UpstreamHttpMethod": [ "GET", "PUT", "DELETE", "POST" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1/orders",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $orderService | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/orders",
+        "UpstreamHttpMethod": [ "POST" ]
+      },    
+      {
+        "DownstreamPathTemplate": "/api/v1/products/{id}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $productSearchService | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/products/{id}",
+        "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1/products",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $productSearchService | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/products",
+        "UpstreamHttpMethod": [ "GET", "POST" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1/account/{id}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $authServer | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/auth/account/{id}",
+        "UpstreamHttpMethod": [ "PUT", "GET" ],        
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "identity_provider",
+          "AllowedScopes": []
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1/account",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $authServer | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/auth/account",
+        "UpstreamHttpMethod": [ "POST" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1/account",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $authServer | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/auth/account",
+        "UpstreamHttpMethod": [ "DELETE" ],        
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "identity_provider",
+          "AllowedScopes": []
+        }
+      },      
+      {
+        "DownstreamPathTemplate": "/auth/token",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": {{ $gateway | quote }},
+            "Port": {{ .Values.service.port }}
+          }
+        ],
+        "UpstreamPathTemplate": "/auth/token",
+        "UpstreamHttpMethod": [ "POST" ]
+      }      
+      ],
+      "GlobalConfiguration": {
+        "BaseUrl": {{ $gateway | quote }},
+        "RouteIsCaseSensitive": false
+      }
+    }
+    
+{{/*---*/}}
+{{/*  {{- if .Values.ingress.enabled -}}*/}}
+{{/*  {{- $service := include "gateway.fullname" . -}}*/}}
+{{/*  {{- $svcPort := .Values.apiGateway.nodePort -}}*/}}
+{{/*apiVersion: networking.k8s.io/v1beta1*/}}
+{{/*kind: Ingress*/}}
+{{/*metadata:*/}}
+{{/*  annotations:*/}}
+{{/*    kubernetes.io/ingress.class: istio*/}}
+{{/*  name: {{ include "eshop-chart.fullname" . }}*/}}
+{{/*  labels:*/}}
+{{/*  {{- include "eshop-chart.labels" . | nindent 4 }}*/}}
+{{/*spec:*/}}
+{{/*  rules:*/}}
+{{/*    - host: {{ .Values.ingress.host | quote }}*/}}
+{{/*      http:*/}}
+{{/*        paths:*/}}
+{{/*          - backend:*/}}
+{{/*              serviceName: {{ $service }}*/}}
+{{/*              servicePort: {{ $svcPort }}*/}}
+{{/*  {{- end }}*/}}

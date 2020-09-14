@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "auth-server.fullname" . }}
+  labels:
+    {{- include "auth-server.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.authServer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "auth-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:    
+      labels:
+        {{- include "auth-server.selectorLabels" . | nindent 8 }}        
+      annotations:
+        {{- include "eshop-chart.configChangeDetection" . | nindent 8 }}
+    spec:      
+      containers:
+        - name: {{ .Chart.Name }}          
+          image: {{ include "auth-server.fullImageName" . }}
+          imagePullPolicy: {{ .Values.authServer.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.service.port }}
+              path: /health/check
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.authServer.configPath | quote }}
+              readOnly: true                   
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: auth-server-appsettings.json
+                      path: appsettings.json
+              - secret:
+                  name: {{ include "eshop-chart.fullname" . }}
+                  items:
+                    - key: auth-server-appsettings.secrets.json
+                      path: appsettings.secrets.json

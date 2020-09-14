@@ -1,0 +1,17 @@
+﻿---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eshop
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+    
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: eshop
+  namespace: eshop
+spec:
+  mtls:
+    mode: DISABLE # Отключаем шифрование трафика на прокси
