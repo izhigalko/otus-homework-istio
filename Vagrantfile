@@ -29,7 +29,14 @@ Vagrant.configure("2") do |config|
     master.vm.network "private_network", ip: "10.0.0.10"
     master.vm.hostname = "k8s-master"
 
-    config.vm.synced_folder "istio/", "/home/vagrant/istio"
+    master.vm.provision "file", source: "istio", destination: "istio"
+    master.vm.provision "file", source: "app", destination: "app"
+
+    config.vm.network "forwarded_port", guest: 32080, host: 32080
+    config.vm.network "forwarded_port", guest: 32081, host: 32081
+    config.vm.network "forwarded_port", guest: 32082, host: 32082
+    config.vm.network "forwarded_port", guest: 32083, host: 32083
+    config.vm.network "forwarded_port", guest: 32084, host: 32084
 
     master.vm.provision "shell", inline: <<-SHELL
       sudo kubeadm init --apiserver-advertise-address=10.0.0.10 --pod-network-cidr=10.244.0.0/16
