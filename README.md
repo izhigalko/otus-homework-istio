@@ -20,13 +20,15 @@ vagrant ssh
 ```
 
 ##Команды для запуска:
+```
 istioctl manifest apply -f istio/istio-manifest.yaml
 kubectl apply -f istio/kiali-secret.yaml -f istio/defaults.yaml -f app/echoserver.yaml  -f app/proxy-app.yaml
-
+```
 ####kiali
-Логин:admin
-Пароль:admin
-
+```
+Логин:  admin
+Пароль: admin
+```
 ##Карта сервисов выполненного задания в Kiali выглядит таким образом:
 
 ![Карта сервисов](homework-kiali-service-map.png)
