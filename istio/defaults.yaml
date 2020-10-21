@@ -6,3 +6,37 @@ metadata:
 spec:
   mtls:
     mode: DISABLE # Отключаем шифрование трафика на прокси
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracing-nodeport
+  namespace: istio-system
+spec:
+  type: NodePort
+  ports:
+    - port: 16686
+      targetPort: 16686
+      protocol: TCP
+      name: "tracing-nodeport"
+      nodePort: 32083
+  selector:
+    app: jaeger
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kiali-service
+  namespace: istio-system
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 20001
+      protocol: TCP
+      nodePort: 32084
+  selector:
+    app: kiali
