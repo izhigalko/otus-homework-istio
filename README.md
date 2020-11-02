@@ -8,18 +8,6 @@
 - [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
 - [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.7.3)
 
-После установки нужно запустить команду запуска в корне проекта:
-
-```shell script
-vagrant up
-```
-
-Для совершения всех операций нам понадобится зайти в виртуальную машину:
-
-```shell script
-vagrant ssh
-```
-
 ## Содержание
 
 * [Задачи](#Задачи)
