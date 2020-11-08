@@ -1,12 +1,3 @@
-# Создать Namespace
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: istio-system
-
-# Создать CRD, использующийся Istio operator'ом, чтобы развернуть Istio
----
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
@@ -28,15 +19,14 @@ spec:
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
       - name: istio-ingressgateway
-        enabled: false
+        enabled: true
 
     egressGateways: # Общаая точка для выхода трафика из Service mesh
       - name: istio-egressgateway
         enabled: false
 
     cni: # Istio container network interface плагин, обеспечивает настройку сети POD
-      enabled: true
-      namespace: "kube-system"
+      enabled: false
 
     pilot: # Управление конфигурацией proxy
       enabled: true
@@ -51,14 +41,6 @@ spec:
             memory: 512Mi
 
   values: # Настройки компонентов
-    meshConfig: # Настройки Service mesh
-
-      enableAutoMtls: false # Отключаем шифрование
-      enableTracing: true # Включаем tracing
-
-      defaultConfig: # Настройки proxy по-умолчанию
-        concurrency: 1 # Количество воркеров
-
     global:
       controlPlaneSecurityEnabled: false
       proxy:
@@ -83,8 +65,9 @@ spec:
         zipkin:
           address: "jaeger-collector.jaeger:9411"
 
-    istio_cni:
-      enabled: true
+    gateways:
+      istio-ingressgateway:
+        type: ClusterIP
 
     pilot:
       autoscaleEnabled: false
@@ -106,13 +89,3 @@ spec:
       objectSelector:
         enabled: false
         autoInject: true
-
-    cni:
-      cniBinDir: /opt/cni/bin
-      cniConfDir: /etc/cni/net.d
-      excludeNamespaces:
-        - istio-system
-        - kube-system
-      repair:
-        deletePods: false
-

@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-homework-app
+spec:
+  ports:
+    - port: 8080
+      name: http
+  selector:
+    app: istio-homework-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v1
+  labels:
+    app: istio-homework-app
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: istio-homework-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: istio-homework-app
+        version: v1
+    spec:
+      containers:
+        - name: app
+          image: docker.io/udintsev/istio-homework-app:latest
+          env:
+            - name: APP_VERSION
+              value: v1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v2
+  labels:
+    app: istio-homework-app
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: istio-homework-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: istio-homework-app
+        version: v2
+    spec:
+      containers:
+        - name: app
+          image: docker.io/udintsev/istio-homework-app:latest
+          env:
+            - name: APP_VERSION
+              value: v2
