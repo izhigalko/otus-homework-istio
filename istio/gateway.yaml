@@ -22,13 +22,11 @@ spec:
   hosts:
   - "*"
   gateways:
-  - ingress
+  - ingress.istio-system
   http:
   - match:
     - uri:
         prefix: /
     route:
     - destination:
-        port:
-          number: 80
-        host: echoserver.default.svc.cluster.cluster
+        host: echoserver.default.svc.cluster.local
