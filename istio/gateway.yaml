@@ -30,5 +30,5 @@ spec:
     route:
     - destination:
         port:
-          number: 32080
-        host: echoserver
+          number: 80
+        host: echoserver.default.svc.cluster.cluster
