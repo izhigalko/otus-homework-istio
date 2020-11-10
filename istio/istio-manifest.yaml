@@ -37,14 +37,14 @@ spec:
               # Note that AWS ELB will by default perform health checks on the first port
               # on this list. Setting this to the health check port will ensure that health
               # checks always work. https://github.com/istio/istio/issues/12503
-            - port: 15021
-              targetPort: 15021
-              name: status-port
+#            - port: 15021
+#              targetPort: 15021
+#              name: status-port
             - port: 32080 # Наш порт, который мы будем использовать. Не всегда есть возможность слушать порт 80 внутри контейнера
               name: http2
-            - port: 443
-              targetPort: 8443
-              name: https
+ #           - port: 443
+ #             targetPort: 8443
+ #             name: https
 
     egressGateways: # Общаая точка для выхода трафика из Service mesh
       - name: istio-egressgateway
