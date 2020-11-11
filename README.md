@@ -139,7 +139,7 @@ env:
 Приложение возвращает в GET запроса значение переменной среды MSG. 
 До настройки ingress gateway и  virtual services:
 
-1.png
+![1](png/1.png)
 
 ```
 wwtlf@MacBook-Pro-Boris-2 /etc % curl http://arch.homework:30081/ping
@@ -161,7 +161,7 @@ wwtlf@MacBook-Pro-Boris-2 /etc % curl http://arch.homework:30081/ping
 
 Настраиваем через kiali:
 
-2.png
+![2](png/2.png)
 
 На выходе получаем следующий набор манифестов, которые можно было создать и руками:
 
@@ -289,3 +289,6 @@ wwtlf@MacBook-Pro-Boris-2 /etc % curl http://arch.homework:30858/ping
 {"message":"I am version 1"}%                                                                                                                                    wwtlf@MacBook-Pro-Boris-2 /etc % curl http://arch.homework:30858/ping
 {"message":"I am version 1"}%
 ```
+
+![3](png/3.png)
+![4](png/4.png)
