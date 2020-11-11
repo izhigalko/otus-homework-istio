@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworldapp1
+  labels:
+    app: helloworldapp 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworldapp
+  template:
+    metadata:
+      labels:
+        app: helloworldapp
+        version: one
+    spec:
+      containers:
+        - name: helloworldapp
+          image: helloworldapp
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: "MSG"
+              value: "I am version 1"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworldapp2
+  labels:
+    app: helloworldapp    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworldapp
+  template:
+    metadata:
+      labels:
+        app: helloworldapp
+        version: two
+    spec:
+      containers:
+        - name: helloworldapp
+          image: helloworldapp
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: "MSG"
+              value: "I am version 2"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworldapp-service
+  labels:
+    app: helloworldapp
+    service: helloworldapp-service
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    name: http
+    nodePort: 30081
+  selector:
+    app: helloworldapp
