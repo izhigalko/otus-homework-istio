@@ -1,2 +1,2 @@
-eval $(minikube -p minikube docker-env)
+eval $(minikube -p otus docker-env)
 docker build . -t helloworldapp
