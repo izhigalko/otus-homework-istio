@@ -1,98 +1,50 @@
-# Практика к занятию по теме "Service mesh на примере Istio"
+# 1.9 Service mesh на примере Istio
 
-## Зависимости
+## Развернуть Minikube
+Так как у меня Mac:
+```
+brew install minikube
+minikube start -p otus
+eval $(minikube -p otus docker-env)
+brew install istioctl
 
-Для выполнения задания вам потребуется установить зависимости:
-
-- [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-- [Vagrant](https://www.vagrantup.com/downloads.html)
-
-После установки нужно запустить команду запуска в корне проекта:
-
-```shell script
-vagrant up
 ```
 
-Для совершения всех операций нам понадобится зайти в виртуальную машину:
+## Развернуть Istio c Ingress gateway
 
-```shell script
-vagrant ssh
+### Ставим ISTIO
+```
+istioctl install --set profile=demo
 ```
 
-## Содержание
+- ✔ Istio core installed
+- ✔ Istiod installed
+- ✔ Egress gateways installed
+- ✔ Ingress gateways installed
+- ✔ Installation complete
 
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
+### Ставим Kiali
 
-## Задачи
+Так как Kiali зависит от prometheus, то сначала ставим его. А для трассировки запросов ставим jaeger.
 
-Задание состоит из этапов
-
-- Развернуть Istio с включенными метриками сервисов и Kiali
-- Развернуть минимум два приложения с Service mesh и сделать к ним несколько запросов
-- Отобразить карту сервисов в Kiali
-
-Карта сервисов в Kiali выглядит таким образом:
-
-![Карта сервисов](kiali-service-map.png)
-
-## Инструкция по выполнению задания
-
-- Сделать форк этого репозитория на Github
-- Выполнить задание в отдельной ветке
-- Создать Pull request с изменениями в этот репозиторий
-
-
-## Лайфхаки по выполнению задания
-
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
-
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/1.6.4/manifests).
-
-Директория `istio` в корне проекта расшарена в виртуальную машину, вы можете изменять файлы 
-в любимом редакторе и применять их в консоли виртуальной машины.
-
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно снова выполнить соответствующую команду с указанием конфигурации:
-
-```shell script
-istioctl manifest apply -f istio/istio-manifest.yaml
+```
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.7/samples/addons/prometheus.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.7/samples/addons/kiali.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.7/samples/addons/jaeger.yaml
 ```
 
-Для выключения шифрования между прокси, нужно применить настройку:
-
-```shell script
-kubectl apply -f istio/defaults.yaml
+Проверяем, что Kiali  установилась:
+```
+wwtlf@MacBook-Pro-Boris-2 ~ % kubectl -n istio-system get svc kiali
+NAME    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)              AGE
+kiali   ClusterIP   10.100.125.15   <none>        20001/TCP,9090/TCP   4m8s
+```
+Смотрим ее dashboard:
+```
+istioctl dashboard kiali
 ```
 
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
 
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
-```
-
-И сделать его проброс с помощью дополнительного флага
-при подключении к виртуальной машине по ssh. Проброс портов заканчивается при завершении этой ssh сессии:
-
-```yaml
-vagrant ssh -- -L 32000:localhost:32080
-```
-
-Здесь `32080` - порт виртуальной машины, `32000` - порт хоста.
-Сервис будет доступен по адресу `localhost:32000`.
+- Развернуть две версии приложения с использованием Istio
+- Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
+- Сделать снимок экрана с картой запросов в Kiali с примеров вызова двух версии сервиса
