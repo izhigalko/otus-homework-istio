@@ -30,3 +30,9 @@ spec:
     route:
     - destination:
         host: echoserver.default.svc.cluster.local
+        subset: v1
+      weight: 20
+    - destination:
+        host: echoserver.default.svc.cluster.local
+        subset: v2
+      weight: 80
