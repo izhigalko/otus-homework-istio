@@ -1,3 +1,13 @@
+# Deployment
+kubectl config set-context --current hw-4
+kubectl config set-context --current --namespace=hw-4
+
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update
+helm install --version "2.17.0" -n jaeger-operator --create-namespace -f jaeger/operator-values.yaml \
+jaeger-operator jaegertracing/jaeger-operator
+kubectl apply -f jaeger/jaeger.yaml
+
 # Практика к занятию по теме "Service mesh на примере Istio"
 
 ## Зависимости
