@@ -1,0 +1,55 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: spring-v-app-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: spring-v-app-destination-rule
+spec:
+  host: spring-v-app
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: spring-v-app
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - spring-v-app-gateway
+  http:
+    - match:
+        - uri:
+            exact: /version
+      route:
+        - destination:
+            host: spring-v-app
+            subset: v1
+            port:
+              number: 8080
+          weight: 50
+        - destination:
+            host: spring-v-app
+            subset: v2
+            port:
+              number: 8080
+          weight: 50

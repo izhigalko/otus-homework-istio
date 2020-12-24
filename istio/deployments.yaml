@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-v-app
+  labels:
+    app: spring-v-app
+    service: spring-v-app
+spec:
+  ports:
+    - port: 8080
+      name: http
+  selector:
+    app: spring-v-app
+  type: NodePort #TODO temp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-v-app-v1
+  labels:
+    app: spring-v-app
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-v-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: spring-v-app
+        version: v1
+    spec:
+      containers:
+        - name: spring-v-app
+          image: rvm1111/arch:dz4v1
+          env:
+            - name: MY_VERSION
+              value: "v1.0"
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-v-app-v2
+  labels:
+    app: spring-v-app
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-v-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: spring-v-app
+        version: v2
+    spec:
+      containers:
+        - name: spring-v-app
+          image: rvm1111/arch:dz4v1
+          env:
+            - name: MY_VERSION
+              value: "v2.0"
+          ports:
+            - containerPort: 8080
