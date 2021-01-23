@@ -96,3 +96,33 @@ vagrant ssh -- -L 32000:localhost:32080
 
 Здесь `32080` - порт виртуальной машины, `32000` - порт хоста.
 Сервис будет доступен по адресу `localhost:32000`.
+
+
+## Выполнение задания
+
+1. На основе инструкции по ссылке https://github.com/izhigalko/otus-demo-istio/tree/minikube
+был развернут Jaeger, Prometheus, Istio, Kiali. При установке kiali-operator версии 1.22.0
+pod kiali не стартовал. Ошибку запуска исправила установка kiali-operator версии 1.27.0.
+2. В качетсве исполняемого приложения был взят echoserver. echoserver.yaml был отредактирован
+для создания 2-х версий приложения. Запускаем в кластере с помощью команды:
+```shell script
+   kubectl apply -f ./app/echoserver.yaml
+```
+3. Для получения доступа к приложению из браузера на хосте создаем Gateway. Для роутинга
+входящего траффика 50/50 для различных версий приложения создаем VirtualService и DestinationRule.
+Описания приведены в файле ./istio/route_by_weight.yaml. Создаем объекты в кластере с помощью команды:
+```shell script
+   kubectl apply -f ./istio/route_by_weight.yaml
+```
+4. Теперь можно отправить запрос и посмотреть результат с помощью браузера на хосте. Чтобы узнать адрес
+можно выполнить следующие команды и использовать значение, выведенное для перменной $GATEWAY_URL.
+```shell script
+   export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+   export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
+   export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].nodePort}')
+   export INGRESS_HOST=$(minikube ip)
+   export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+   echo $GATEWAY_URL
+```
+5. После создания нагрузки был снят скриншот в Kiali.
+![Роутинг траффика по версии приложения](kiali_scr.png)
