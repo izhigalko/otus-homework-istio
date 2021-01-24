@@ -1,0 +1,50 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: app-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      # Kubernetes service names to serve through this Gateway
+      hosts:
+        - "app.default.svc.cluster.local"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: app-virtual-service
+spec:
+  hosts:
+    - "app.default.svc.cluster.local"
+  gateways:
+    - app-gateway
+  http:
+    - route:
+        - destination:
+            host: app
+            subset: v1
+          weight: 50
+        - destination:
+            host: app
+            subset: v2
+          weight: 50
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: app
+spec:
+  host: "app.default.svc.cluster.local"
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
