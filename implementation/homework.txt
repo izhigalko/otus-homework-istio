@@ -1,0 +1,30 @@
+Установка Prometheus
+	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics
+	helm repo update
+	kubectl create namespace prometheus
+	helm install -n prometheus prometheus prometheus-community/prometheus
+	
+Установка Jaeger
+	helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+	kubectl create namespace jaeger-operator
+	kubectl create namespace jaeger
+	helm upgrade -n jaeger-operator -i jaeger-operator jaegertracing/jaeger-operator
+	helm upgrade -n jaeger -i jaeger jaegertracing/jaeger
+	
+Установка istio
+	download and extract the latest version https://istio.io/latest/docs/setup/getting-started/#download
+	kubectl create namespace istio-system
+	helm install -n istio-system istio-base manifests/charts/base
+	helm install --namespace istio-system istiod manifests/charts/istio-control/istio-discovery --set global.hub="docker.io/istio" --set global.tag="1.8.2"
+	helm install --namespace istio-system istio-ingress manifests/charts/gateways/istio-ingress --set global.hub="docker.io/istio" --set global.tag="1.8.2"
+	kubectl apply -f samples/addons/jaeger.yaml
+	kubectl apply -f samples/addons/prometheus.yaml
+	
+Установка kiali
+	kubectl create namespace kiali-operator
+	helm install --set cr.create=true --set cr.namespace=istio-system --namespace kiali-operator --repo https://kiali.org/helm-charts kiali-operator kiali-operator	
+	
+Установка тестового сервиса
+	kubectl apply -f otus/otus.yaml
+	kubectl apply -f otus/route.yaml

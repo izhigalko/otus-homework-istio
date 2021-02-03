@@ -1,0 +1,51 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: otus-gateway
+  namespace: otus
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 8000
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: otus-vs
+  namespace: otus
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - otus-gateway
+  http:
+  - route:
+    - destination:
+        host: otus
+        subset: otus-v1
+      weight: 50
+    - destination:
+        host: otus
+        subset: otus-v2
+      weight: 50
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: otus
+  namespace: otus
+spec:
+  host: otus
+  subsets:
+  - name: otus-v1
+    labels:
+      version: otus-v1
+  - name: otus-v2
+    labels:
+      version: otus-v2 

@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otus
+  labels:
+    istio-injection: enabled
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: otus
+  namespace: otus
+  labels:
+    app: otus
+spec:
+  ports:
+    - protocol: TCP
+      port: 8000
+      nodePort: 30000
+      name: "http"
+  selector:
+    app: otus
+  type: NodePort
+  
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: otus
+  name: otus-v1
+  labels:
+    app: otus
+    version: otus-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otus
+      version: otus-v1
+  template:
+    metadata:
+      labels:
+        app: otus
+        version: otus-v1
+    spec:
+      containers:
+        - name: otus
+          image: 'ledzhy/otus:latest'
+          ports:
+            - containerPort: 8000
+            
+---            
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: otus
+  name: otus-v2
+  labels:
+    app: otus
+    version: otus-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otus
+      version: otus-v2
+  template:
+    metadata:
+      labels:
+        app: otus
+        version: otus-v2
+    spec:
+      containers:
+        - name: otus
+          image: 'ledzhy/otus:latest'
+          ports:
+            - containerPort: 8000
