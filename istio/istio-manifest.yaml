@@ -4,6 +4,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: istio-system
+  labels:
+    istio-injection: disabled
 
 # Создать CRD, использующийся Istio operator'ом, чтобы развернуть Istio
 ---
@@ -18,12 +20,6 @@ spec:
       enabled: true
 
     istiod_remote: # Настройки, при которых уровень управления установлен вне кластера
-      enabled: false
-
-    policy: # Управление авторизацией, аудит с помощью Mixer, deprecated
-      enabled: false
-
-    telemetry: # Телеметрия с помощью Mixer, deprecated
       enabled: false
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
@@ -60,8 +56,8 @@ spec:
         concurrency: 1 # Количество воркеров
 
     global:
-      controlPlaneSecurityEnabled: false
       proxy:
+        autoInject: enabled
         resources:
           requests:
             cpu: 50m
@@ -94,17 +90,15 @@ spec:
 
     telemetry:
       enabled: true
-      v1:
-        enabled: false
       v2:
         enabled: true
         prometheus:
           enabled: true
 
     sidecarInjectorWebhook:
-      enableNamespacesByDefault: false
+      enableNamespacesByDefault: true
       objectSelector:
-        enabled: false
+        enabled: true
         autoInject: true
 
     cni:
@@ -115,4 +109,3 @@ spec:
         - kube-system
       repair:
         deletePods: false
-
