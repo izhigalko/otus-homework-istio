@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load
+  namespace: swa10-homework
+spec:
+  template:
+    metadata:
+      labels:
+        app: load
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      containers:
+        - name: load
+          image: ditch0/swa10-load:v2
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Never
+  backoffLimit: 1
