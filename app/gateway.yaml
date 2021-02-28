@@ -1,0 +1,51 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: hello
+  namespace: swa10-homework
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello
+  namespace: swa10-homework
+spec:
+  hosts:
+    - hello
+  http:
+    - route:
+        - destination:
+            host: hello
+            subset: v1
+          weight: 50
+        - destination:
+            host: hello
+            subset: v2
+          weight: 50
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: hello
+  namespace: swa10-homework
+spec:
+  host: hello
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
