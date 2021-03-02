@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: reviews-destination
+spec:
+  host: echoserver
+  subsets:
+    - name: "1"
+      labels:
+        version: "1"
+    - name: "2"
+      labels:
+        version: "2"

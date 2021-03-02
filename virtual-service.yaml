@@ -28,5 +28,14 @@ spec:
             port:
               number: 80
             host: echoserver
+            subset: "1"
+          weight: 10
+        - destination:
+            port:
+              number: 80
+            host: echoserver
+            subset: "2"
+          weight: 90
+
 
 
