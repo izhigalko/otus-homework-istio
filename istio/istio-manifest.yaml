@@ -24,9 +24,9 @@ spec:
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
       - name: istio-ingressgateway
-        enabled: false
+        enabled: true
 
-    egressGateways: # Общаая точка для выхода трафика из Service mesh
+    egressGateways: # Общая точка для выхода трафика из Service mesh
       - name: istio-egressgateway
         enabled: false
 
@@ -51,6 +51,7 @@ spec:
 
       enableAutoMtls: false # Отключаем шифрование
       enableTracing: true # Включаем tracing
+      accessLogFile: /dev/stdout
 
       defaultConfig: # Настройки proxy по-умолчанию
         concurrency: 1 # Количество воркеров
