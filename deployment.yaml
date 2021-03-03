@@ -1,0 +1,79 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxyapp
+  labels:
+    app: proxyapp
+    service: proxyapp
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: proxyapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxyapp-v1
+  labels:
+    app: proxyapp
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxyapp
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: proxyapp
+        version: v1
+    spec:
+      containers:
+      - name: proxyapp
+        image: alia1221/proxyapp:v1
+        resources:
+          requests:
+            cpu: "100m"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxyapp-v2
+  labels:
+    app: proxyapp
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxyapp
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: proxyapp
+        version: v2
+    spec:
+      containers:
+      - name: proxyapp
+        image: alia1221/proxyapp:v2
+        resources:
+          requests:
+            cpu: "100m"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
