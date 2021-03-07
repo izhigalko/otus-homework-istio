@@ -13,6 +13,6 @@ export let options = {
 };
 
 export default () => {
-    http.get(`http://hello.swa10-homework/`);
+    http.get(`http://${__ENV.INGRESS_HOST}:${__ENV.INGRESS_PORT}`);
     sleep(1)
 };
