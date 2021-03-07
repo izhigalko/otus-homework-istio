@@ -22,6 +22,8 @@ metadata:
   namespace: swa10-homework
 spec:
   hosts:
+    - "*"
+  gateways:
     - hello
   http:
     - route:
