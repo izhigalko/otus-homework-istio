@@ -1,0 +1,38 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: echo-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+    - port:
+        number: 9888
+        name: http-wildcard
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: echo-rule
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - echo-gateway
+  http:
+    - match:
+      - port: 80
+      route:
+        - destination:
+            host: echoserver-v1
+          weight: 50
+        - destination:
+            host: echoserver-v2
+          weight: 50
+
+
