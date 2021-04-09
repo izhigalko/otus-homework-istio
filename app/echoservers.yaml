@@ -34,16 +34,16 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: echoserver
+      app: echoserver-v1
       version: "1"
   template:
     metadata:
       labels:
-        app: echoserver
+        app: echoserver-v1
         version: "1"
     spec:
       containers:
-        - name: echoserver
+        - name: echoserver-v1
           image: proxy-app
           imagePullPolicy: IfNotPresent
           ports:
@@ -78,16 +78,16 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: echoserver
+      app: echoserver-v2
       version: "2"
   template:
     metadata:
       labels:
-        app: echoserver
+        app: echoserver-v2
         version: "2"
     spec:
       containers:
-        - name: echoserver
+        - name: echoserver-v2
           image: proxy-app
           imagePullPolicy: IfNotPresent
           ports:
