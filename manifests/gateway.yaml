@@ -1,0 +1,43 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: otus-hw4-app-gateway
+  namespace: otus-hw4-ns
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: otus-hw4-virt-service
+  namespace: otus-hw4-ns
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - otus-hw4-app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /otus-hw4-app
+    route:
+      - destination:
+          host: otus-hw4-app
+          port:
+            number: 8080
+          subset: v1
+        weight: 50
+      - destination:
+          host: otus-hw4-app
+          port:
+            number: 8080
+          subset: v2
+        weight: 50
