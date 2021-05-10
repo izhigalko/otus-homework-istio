@@ -1,0 +1,113 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: 32080
+      targetPort: 8080
+      name: "http"  # Istio требует явного указания протокола при определенных настройках
+  selector:
+    app: echoserver
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: echoserver-canary
+spec:
+  gateways: []
+  hosts:
+    - echoserver.default.svc.cluster.local
+  http:
+    - route:
+        - destination:
+            host: echoserver.default.svc.cluster.local
+            subset: echoserver-1
+            port:
+              number: 80
+          weight: 50
+        - destination:
+            host: echoserver.default.svc.cluster.local
+            subset: echoserver-2
+            port:
+              number: 80
+          weight: 50
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: echoserver
+spec:
+  host: echoserver.default.svc.cluster.local
+  subsets:
+    - name: echoserver-1
+      labels:
+        version: "1"
+    - name: echoserver-2
+      labels:
+        version: "2"
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-1
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: echoserver
+      version: "1"
+  template:
+    metadata:
+      labels:
+        app: echoserver
+        version: "1"
+    spec:
+      containers:
+        - name: echoserver
+          image: proxy-app
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-2
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: echoserver
+      version: "2"
+  template:
+    metadata:
+      labels:
+        app: echoserver
+        version: "2"
+    spec:
+      containers:
+        - name: echoserver-2
+          image: proxy-app
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
