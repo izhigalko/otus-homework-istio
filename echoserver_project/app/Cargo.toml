@@ -1,0 +1,37 @@
+[package]
+name = "echoserver-app"
+version = "1.0.0"
+authors = ["d.grigoriev <dmitry-gr87@yandex.ru>"]
+edition = "2018"
+
+
+[[bin]]
+name = "myapp"
+path = "src/main.rs"
+
+
+[dependencies]
+log = "0.4.14"
+log4rs = "1.0.0"
+maplit = "1.0.2"
+config = "0.11.0"
+dotenv = "0.15.0"
+serde_json = "1.0.64"
+quoted-string = "0.6.1"
+chrono = { version = "0.4.19", features = ["serde", "rustc-serialize"] }
+actix-web = { version = "3.3.2", features = ["openssl"] }
+actix-service = "^1.0"
+actix-cors = "0.5.4"
+serde = "^1.0"
+openssl = "*"
+
+
+[profile.dev]
+codegen-units = 32
+incremental = true
+opt-level = 0
+
+
+[profile.release]
+codegen-units = 1
+opt-level = 3

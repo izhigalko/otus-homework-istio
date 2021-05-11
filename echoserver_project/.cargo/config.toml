@@ -1,0 +1,12 @@
+[build]
+target = "x86_64-pc-windows-gnu"
+
+
+[target.x86_64-pc-windows-gnu]
+linker = "x86_64-w64-mingw32-gcc"
+rustflags = ["-Ctarget-feature=+crt-static", "-Cembed-bitcode=yes", "-Clto=fat"]
+
+
+[target.x86_64-unknown-linux-musl]
+linker = "musl-gcc"
+rustflags = ["-Ctarget-feature=+crt-static", "-Cembed-bitcode=yes", "-Clto=thin"]

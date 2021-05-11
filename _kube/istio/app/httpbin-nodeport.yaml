@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpbin
+  namespace: httpbin-namespace
+  labels:
+    app: httpbin
+    service: httpbin
+
+spec:
+  selector:
+    app: httpbin
+  type: NodePort
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8888
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpbin-v1
+  namespace: httpbin-namespace
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpbin
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: httpbin
+        version: v1
+    spec:
+      containers:
+      - name: echoserver-app-v1
+        image: "dgr113/otus-arch-lab:echoserver-app-latest"
+        imagePullPolicy: Always
+        env:
+          - name: APP_VERSION
+            value: "v1"
+        ports:
+          - name: http
+            containerPort: 8888
+            protocol: TCP
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpbin-v2
+  namespace: httpbin-namespace
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpbin
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: httpbin
+        version: v2
+    spec:
+      containers:
+      - name: echoserver-app-v2
+        image: "dgr113/otus-arch-lab:echoserver-app-latest"
+        imagePullPolicy: Always
+        env:
+          - name: APP_VERSION
+            value: "v2"
+        ports:
+          - name: http
+            containerPort: 8888
+            protocol: TCP

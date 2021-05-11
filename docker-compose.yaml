@@ -1,0 +1,15 @@
+version: '3.9'
+
+
+
+services:
+  echoserver-service:
+    image: dgr113/otus-arch-lab:echoserver-app-latest
+    container_name: echoserver-app-container
+    build:
+      context: echoserver_project
+    environment:
+      - DEBUG=1
+      - APP_VERSION=v1
+    ports:
+      - "80:8888"
