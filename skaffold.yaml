@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta15
+kind: Config
+metadata:
+  name: homework4
+build:
+  artifacts:
+  - image: proxy-app
+    context: app/src
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - app/echoserver.yaml
+    - app/proxy-app.yaml
