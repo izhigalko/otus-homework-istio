@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: lesson-10-load
+  namespace: lesson-10
+spec:
+  template:
+    metadata:
+      labels:
+        app: lesson-10-load
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      containers:
+        - name: load
+          image: lesson-10-load
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Never
+  backoffLimit: 1
