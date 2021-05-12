@@ -12,20 +12,29 @@ kind: Service
 metadata:
   name: echoserver
   namespace: default
+  labels:
+    app: echoserver
+    service: echoserver
 spec:
-  type: NodePort
   ports:
-    - port: 80
-      nodePort: 32080
+    - port: 8080
       targetPort: 8080
       name: "http"  # Istio требует явного указания протокола при определенных настройках
   selector:
     app: echoserver
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: echoserver-service
+  labels:
+    account: echoserver
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: echoserver-gateway
+  namespace: default
 spec:
   selector:
     istio: ingressgateway # use istio default controller
@@ -41,30 +50,32 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: echoserver-canary
+  namespace: default
 spec:
   gateways:
     - echoserver-gateway
   hosts:
-    - echoserver.default.svc.cluster.local
+    - "*"
   http:
     - route:
         - destination:
             host: echoserver.default.svc.cluster.local
             subset: echoserver-1
             port:
-              number: 80
+              number: 8080
           weight: 50
         - destination:
             host: echoserver.default.svc.cluster.local
             subset: echoserver-2
             port:
-              number: 80
+              number: 8080
           weight: 50
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: echoserver
+  namespace: default
 spec:
   host: echoserver.default.svc.cluster.local
   subsets:
@@ -95,6 +106,7 @@ spec:
         app: echoserver
         version: "1"
     spec:
+      serviceAccountName: echoserver-service
       containers:
         - name: echoserver
           image: proxy-app
