@@ -6,7 +6,6 @@ metadata:
   labels:
     istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
 
----
 apiVersion: v1
 kind: Service
 metadata:
@@ -18,10 +17,9 @@ spec:
     - port: 80
       nodePort: 32080
       targetPort: 8080
-      name: "http"  # Istio требует явного указания протокола при определенных настройках
+      name: http-web  # Istio требует явного указания протокола при определенных настройках
   selector:
     app: echoserver
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,12 +33,12 @@ spec:
   selector:
     matchLabels:
       app: echoserver
-      version: "1"
+      version: "v1"
   template:
     metadata:
       labels:
         app: echoserver
-        version: "1"
+        version: "v1"
     spec:
       containers:
         - name: echoserver

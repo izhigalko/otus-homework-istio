@@ -43,7 +43,7 @@ spec:
         app_label: "grafana"
 
     prometheus:
-      url: "http://prom-kube-prometheus-stack-prometheus.monitoring:9090"
+      url: "http://prom-prometheus.monitoring:9090"
       component_status:
         namespace: "monitoring"
         app_label: "prometheus"
@@ -51,8 +51,8 @@ spec:
 
     tracing:
       enabled: true
-      in_cluster_url: "http://jaeger-query.jaeger.svc.cluster.local:16686"
-      url: "http://jaeger-query.jaeger.svc.cluster.local:16686"
+      in_cluster_url: "http://jaeger.arch.homework/"
+      url: "http://jaeger.arch.homework/"
       component_status:
         namespace: "jaeger"
         app_label: "jaeger"

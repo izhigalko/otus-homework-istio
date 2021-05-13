@@ -11,5 +11,6 @@ build:
 deploy:
   kubectl:
     manifests:
+    - app/echoserver1.yaml
     - app/echoserver.yaml
     - app/proxy-app.yaml
