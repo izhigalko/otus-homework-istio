@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-app
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+    - name: http # Use http or https
+      protocol: TCP
+      port: 80
+      nodePort: 32082
+      targetPort: 80
+  selector:
+    app: proxy-app
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: proxy-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: proxy-app
+        version: v1
+    spec:
+      containers:
+        - name: proxy-app
+          image: eubash/arch-healthcheck:1.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-app-v2
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: proxy-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: proxy-app
+        version: v2
+    spec:
+      containers:
+        - name: proxy-app
+          image: eubash/arch-healthcheck:1.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
