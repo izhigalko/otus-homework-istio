@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: first-app
+  namespace: default
+spec:
+  selector:
+    app: first-app
+  type: NodePort
+  ports:
+    - name: http # Use http or https
+      protocol: TCP
+      port: 80
+      nodePort: 32081
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: first-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: first-app
+  template:
+    metadata:
+      labels:
+        app: first-app
+    spec:
+      containers:
+        - name: first-app
+          image: eubash/arch-healthcheck:0.0.3
+          ports:
+            - containerPort: 80
