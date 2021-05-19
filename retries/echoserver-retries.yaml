@@ -5,6 +5,8 @@ metadata:
 spec:
   hosts:
     - echoserver.default.svc.cluster.local
+  gateways:
+    - istio-ingressgateway
   http:
     - match:
         - uri:
