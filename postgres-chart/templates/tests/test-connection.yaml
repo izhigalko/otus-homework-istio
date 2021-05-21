@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "postgres-chart.fullname" . }}-test-connection"
+  labels:
+    {{- include "postgres-chart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "postgres-chart.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

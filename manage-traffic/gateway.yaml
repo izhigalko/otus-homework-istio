@@ -1,0 +1,56 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: hw04-istio-ms-arch-2021-03-canary
+  namespace: default
+spec:
+  host: hw04-istio-ms-arch-2021-03
+  subsets:
+    - name: 0.1
+      labels:
+        canary: "false"
+    - name: 0.2
+      labels:
+        canary: "true"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: hw04-istio-ms-arch-2021-03-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hw04-istio-ms-arch-2021-03-canary
+  namespace: default
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - hw04-istio-ms-arch-2021-03-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: hw04-istio-ms-arch-2021-03
+            subset: 0.1
+          weight: 50
+        - destination:
+            host: hw04-istio-ms-arch-2021-03
+            subset: 0.2
+          weight: 50

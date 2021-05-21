@@ -1,0 +1,15 @@
+replicaCount: 2
+
+image:
+  repository: hw02-crud
+
+service:
+  type: NodePort
+  port: 9000
+
+externalPostgresql:
+  postgresqlUsername: myuser
+  postgresqlPassword: passwd
+  postgresqlDatabase: myapp
+  postgresqlHost: "postgres"
+  postgresqlPort: "5432"
