@@ -47,6 +47,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "hw04-istio-chart.selectorLabels" -}}
+version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/name: {{ include "hw04-istio-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app: {{ include "hw04-istio-chart.fullname" . }}

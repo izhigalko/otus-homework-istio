@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hw04-istio-ms-arch-2021-03
+  name: hw04-istio-ms-arch-2021-03-2
   labels:
-    helm.sh/chart: ms-arch-2021-03-0.2.0
+    helm.sh/chart: ms-arch-2021-03-2
     version: "0.2"
     app.kubernetes.io/name: ms-arch-2021-03
     app.kubernetes.io/instance: hw04-istio
@@ -24,6 +24,7 @@ spec:
         app.kubernetes.io/name: ms-arch-2021-03
         app.kubernetes.io/instance: hw04-istio
         app: hw04-istio-ms-arch-2021-03
+        version: "0.2"
       annotations:
         checksum/config: 642576a6111d93aef0a8b424a00539b0f9a29ee0bfc29d9443ea292342879bc3
     spec:

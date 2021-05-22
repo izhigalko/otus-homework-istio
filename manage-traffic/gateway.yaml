@@ -6,12 +6,12 @@ metadata:
 spec:
   host: hw04-istio-ms-arch-2021-03
   subsets:
-    - name: 0.1
+    - name: v1
       labels:
-        canary: "false"
-    - name: 0.2
+        version: "0.1"
+    - name: v2
       labels:
-        canary: "true"
+        version: "0.2"
 
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -48,9 +48,9 @@ spec:
       route:
         - destination:
             host: hw04-istio-ms-arch-2021-03
-            subset: 0.1
+            subset: v1
           weight: 50
         - destination:
             host: hw04-istio-ms-arch-2021-03
-            subset: 0.2
+            subset: v2
           weight: 50
