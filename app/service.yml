@@ -1,0 +1,47 @@
+# Source: ms-arch-2021-03/templates/config.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ms-arch-2021-03-secret
+type: Opaque
+data:
+  spring.datasource.username: bXl1c2Vy
+  spring.datasource.password: cGFzc3dk
+---
+# Source: ms-arch-2021-03/templates/config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ms-arch-2021-03-config
+data:
+  spring.datasource.url: jdbc:postgresql://postgres:5432/myapp
+  management.endpoints.web.exposure.include: "prometheus"
+  management.metrics.export.prometheus.enabled: "true"
+  management.metrics.distribution.percentiles-histogram.http.server.requests: "true"
+  management.metrics.distribution.sla.http.server.requests: "100ms,150ms,250ms,500ms,1s"
+  management.metrics.enable.jvm: "true"
+---
+# Source: ms-arch-2021-03/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hw04-istio-ms-arch-2021-03
+  labels:
+    helm.sh/chart: ms-arch-2021-03-0.1.0
+    version: "0.1"
+    app.kubernetes.io/name: ms-arch-2021-03
+    app.kubernetes.io/instance: hw04-istio
+    app: hw04-istio-ms-arch-2021-03
+    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: NodePort
+  ports:
+    - port: 9000
+      targetPort: web
+      protocol: TCP
+      name: web
+  selector:
+    app.kubernetes.io/name: ms-arch-2021-03
+    app.kubernetes.io/instance: hw04-istio
+    app: hw04-istio-ms-arch-2021-03
