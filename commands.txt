@@ -1,0 +1,37 @@
+# minikube
+minikube start --cpus=2 --memory=6g --cni=flannel --kubernetes-version="v1.19.0" --extra-config=apiserver.enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset --extra-config=apiserver.authorization-mode=Node,RBAC
+
+# namespaces
+kubectl apply -f namespaces.yaml
+
+# jaeger
+helm install --version "2.19.0" -n jaeger-operator -f jaeger/operator-values.yaml jaeger-operator jaegertracing/jaeger-operator
+kubectl apply -f jaeger/jaeger.yaml
+
+# promethous (do we need it?)
+helm install --version "13.7.2" -n monitoring -f prometheus/operator-values.yaml prometheus prometheus-community/kube-prometheus-stack
+kubectl apply -f prometheus/monitoring-nodeport.yaml
+
+# istio
+istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator
+kubectl apply -f istio/istio.yaml
+
+# kiali
+helm install --version "1.33.1" -n kiali-operator kiali-operator kiali/kiali-operator
+kubectl apply -f kiali/kiali.yaml
+
+# build containers
+docker build -t vndovr/proxy-app:latest -f app/load/Dockerfile app/src
+docker build -t vndovr/load-demo:latest -f app/load/Dockerfile app/load
+
+# start applications
+kubectl apply -f app/echoserver.yaml
+kubectl apply -f app/echoserver2.yaml
+kubectl apply -f app/proxy-app.yaml
+kubectl apply -f app/load.yaml
+
+# split traffic
+kubectl echo-server-split.yaml
+
+kubectl port-forward service/kiali -n kiali 20001:20001
+

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: load
-          image: vndovr/load-otus-demo
+          image: vndovr/load-demo
           imagePullPolicy: IfNotPresent
       restartPolicy: Never
   backoffLimit: 1
