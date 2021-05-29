@@ -1,0 +1,12 @@
+apiVersion: skaffold/v2beta9
+kind: Config
+metadata:
+  name: app
+build:
+  artifacts:
+  - image: exxbrain/echoserver
+    context: src
+deploy:
+  kubectl:
+    manifests:
+    - echoserver.yaml

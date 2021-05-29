@@ -1,3 +1,23 @@
+```shell
+minikube start --cni=flannel
+kubectl apply -f namespaces.yaml
+```
+
+### Разворачиваем все по порядку
+* jaeger/README.md
+* monitoring/README.md
+* istio/README.md
+* kiali/README.md
+* app/README.md
+
+```shell
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}') \
+&& export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}') \
+&& export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].nodePort}') \
+&& export INGRESS_HOST=$(minikube ip) \
+&& k6 run --duration 2m load/script.js -e GATEWAY_URL="http://$INGRESS_HOST:$INGRESS_PORT"
+```
+
 # Практика к занятию по теме "Service mesh на примере Istio"
 
 ## Зависимости
@@ -11,9 +31,12 @@
 
 ## Содержание
 
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
+- [Практика к занятию по теме "Service mesh на примере Istio"](#практика-к-занятию-по-теме-service-mesh-на-примере-istio)
+  - [Зависимости](#зависимости)
+  - [Содержание](#содержание)
+  - [Задачи](#задачи)
+  - [Инструкция по выполнению задания](#инструкция-по-выполнению-задания)
+  - [Лайфхаки по выполнению задания](#лайфхаки-по-выполнению-задания)
 
 ## Задачи
 
