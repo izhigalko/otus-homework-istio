@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-v2
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: echoserver
+      version: "2"
+  template:
+    metadata:
+      labels:
+        app: echoserver
+        version: "2"
+    spec:
+      containers:
+        - name: echoserver
+          image: zotovkem86/proxy-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
