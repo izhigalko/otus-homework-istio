@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: load
-          image: vndovr/load-demo
+          image: vndovr/load-demo:v5
           imagePullPolicy: IfNotPresent
       restartPolicy: Never
   backoffLimit: 1

@@ -1,7 +1,44 @@
 apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: echoserver-gateway
+spec:
+  selector:
+    istio: ingressgateway  # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - echoserver.default
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: echoserver
+  name: splitter1
+spec:
+  hosts:
+  - echoserver.default
+  gateways:
+  - default/echoserver-gateway
+  http:
+  - route:
+    - destination:
+        host: echoserver
+        port:
+          number: 80
+      weight: 50
+    - destination:
+        host: echoserver2
+        port:
+          number: 80
+      weight: 50
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: splitter2
 spec:
   hosts:
   - echoserver
@@ -9,7 +46,11 @@ spec:
   - route:
     - destination:
         host: echoserver
+        port:
+          number: 80
       weight: 50
     - destination:
         host: echoserver2
+        port:
+          number: 80
       weight: 50

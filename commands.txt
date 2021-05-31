@@ -8,7 +8,7 @@ kubectl apply -f namespaces.yaml
 helm install --version "2.19.0" -n jaeger-operator -f jaeger/operator-values.yaml jaeger-operator jaegertracing/jaeger-operator
 kubectl apply -f jaeger/jaeger.yaml
 
-# promethous (do we need it?)
+# prometheus (do we need it?)
 helm install --version "13.7.2" -n monitoring -f prometheus/operator-values.yaml prometheus prometheus-community/kube-prometheus-stack
 kubectl apply -f prometheus/monitoring-nodeport.yaml
 

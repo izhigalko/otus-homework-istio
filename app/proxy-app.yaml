@@ -13,10 +13,8 @@ metadata:
   name: proxy-app
   namespace: default
 spec:
-  type: NodePort
   ports:
     - port: 80
-      nodePort: 32081
       targetPort: 8080
       name: "http" # Istio требует явного указания протокола при определенных настройках
   selector:
