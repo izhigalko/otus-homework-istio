@@ -86,3 +86,24 @@ spec:
 ```yaml
 minikube service -n <namespace> <service>
 ```
+
+## Запуск ДЗ
+- Развернуть Jaeger, Prometheus, Istio, Kiali по примеру https://github.com/izhigalko/otus-demo-istio/tree/minikube. Если Kiali не запускается, то можно попробовать запустить последнюю версию, а не 1.22.0.
+- Билд имеджа приложения:
+```shell script
+docker build -t echoserver ./hw/src
+```
+- Деплой приложения:
+```shell script
+kubectl apply -f ./hw
+```
+- Манифесты для роутинга:
+```shell script
+kubectl apply -f ./istio
+```
+- Запросы к приложению:
+```shell script
+curl $(minikube service echoserver --url -n apalyvoda)
+```
+- Результат:
+![Роутинг траффика по версии приложения](apalyvoda.png)
