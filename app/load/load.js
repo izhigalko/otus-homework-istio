@@ -13,7 +13,6 @@ export let options = {
 };
 
 export default () => {
-    // http.get(`http://proxy-app.default/?http://echoserver`);
-    http.get(`http://echoserver.default/`);
+    http.get(`http://${__ENV.GATEWAY_HOST}:${__ENV.GATEWAY_PORT}`);
     sleep(1)
 };

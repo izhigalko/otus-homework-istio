@@ -1,1 +1,1 @@
-![kiali](kiali.png)
+![kiali](istio_via_gateway.png)
