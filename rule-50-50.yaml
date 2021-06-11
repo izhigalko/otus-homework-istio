@@ -4,7 +4,9 @@ metadata:
   name: userapp
 spec:
   hosts:
-    - userapp
+  - "*"
+  gateways:
+  - userapp-gateway
   http:
   - route:
     - destination:
