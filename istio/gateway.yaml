@@ -6,7 +6,7 @@ metadata:
   name: echo-gateway
 spec:
   selector:
-    app: echoserver
+    istio: ingressgateway
   servers:
   - port:
       number: 80
@@ -23,7 +23,7 @@ metadata:
   name: echoserver
 spec:
   hosts:
-  - echoserver
+  - "*"
   gateways:
     - echo-gateway
   http:
