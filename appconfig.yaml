@@ -1,0 +1,79 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userapp
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: 32080
+      targetPort: 8080
+      name: "http"  # Istio требует явного указания протокола при определенных настройках
+  selector:
+    app: userapp 
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userapp
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: userapp
+      version: "1"
+  template:
+    metadata:
+      labels:
+        app: userapp
+        version: "1"
+    spec:
+      containers:
+        - name: userapp
+          image: >-
+            docker.io/mvkoshenkova/otushw:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userapp2
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: userapp
+      version: "2"
+  template:
+    metadata:
+      labels:
+        app: userapp
+        version: "2"
+    spec:
+      containers:
+        - name: userapp
+          image: >-
+            docker.io/mvkoshenkova/otushw:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
