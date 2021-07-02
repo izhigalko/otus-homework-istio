@@ -77,7 +77,7 @@ spec:
             memory: 64Mi
       tracer:
         zipkin:
-          address: "jaeger-collector.jaeger:16686"
+          address: "jaeger-collector.jaeger:9411"
 
     istio_cni:
       enabled: true

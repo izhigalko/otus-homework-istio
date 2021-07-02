@@ -7,10 +7,39 @@ metadata:
     istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
 
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver
+  namespace: default
+  labels:
+    app: echoserver
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: echoserver
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: echoserver
+        version: v1
+    spec:
+      containers:
+        - name: echoserver
+          image: zotovkem86/proxy-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: echoserver
+  name: echoserver-service
   namespace: default
 spec:
   type: NodePort
@@ -21,30 +50,3 @@ spec:
       name: "http"  # Istio требует явного указания протокола при определенных настройках
   selector:
     app: echoserver
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: echoserver
-  namespace: default
-spec:
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app: echoserver
-      version: "1"
-  template:
-    metadata:
-      labels:
-        app: echoserver
-        version: "1"
-    spec:
-      containers:
-        - name: echoserver
-          image: zotovkem86/proxy-app:latest
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080

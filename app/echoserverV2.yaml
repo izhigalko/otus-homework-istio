@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: echoserver-v2
   namespace: default
+  labels:
+    app: echoserver
+    version: v2
 spec:
   replicas: 1
   strategy:
@@ -10,12 +13,12 @@ spec:
   selector:
     matchLabels:
       app: echoserver
-      version: "2"
+      version: v2
   template:
     metadata:
       labels:
         app: echoserver
-        version: "2"
+        version: v2
     spec:
       containers:
         - name: echoserver
