@@ -1,0 +1,73 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: echoserver
+spec:
+  host: echoserver
+  subsets:
+    - name: echoserver-v1
+      labels:
+        app: echoserver
+        version: v1
+    - name: echoserver-v2
+      labels:
+        app: echoserver
+        version: v2
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: app-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: echoserver
+  namespace: default
+spec:
+  hosts:
+    - echoserver.default.cluster.local
+  gateways:
+    - app-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: echoserver.default.svc.cluster.local
+            subset: echoserver-v1
+          weight: 50
+        - destination:
+            host: echoserver.default.svc.cluster.local
+            subset: echoserver-v2
+          weight: 50
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Sidecar
+metadata:
+  name: proxy-app-only-echoserver
+  namespace: default
+spec:
+  egress:
+    - hosts:
+        - "default/echoserver.default.svc.cluster.local" # Разрешаем сервису ходить к echoservice
+  outboundTrafficPolicy:
+    mode: REGISTRY_ONLY
+  workloadSelector:
+    labels:
+      app: proxy-app
