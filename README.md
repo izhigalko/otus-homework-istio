@@ -86,3 +86,27 @@ spec:
 ```yaml
 minikube service -n <namespace> <service>
 ```
+
+## Запуск дз
+- Раскатить Jaeger, Prometheus, Istio, Kiali
+- Билд имеджа приложения:
+```shell script
+eval $(minikube docker-env) && docker build -t proxy-app:latest -f app/src/Dockerfile app/src
+```
+- Деплой приложения:
+```shell script
+kubectl apply -f namespaces.yaml
+kubectl apply -f ./app/deploy
+```
+- Istio Gateway:
+```shell script
+kubectl apply -f ./istio
+```
+- Запросы к приложению:
+```shell script
+eval $(minikube docker-env) && docker build -t load-otus-demo:latest -f app/load/Dockerfile app/load
+kubectl apply -f app/load.yaml
+```
+- Результат:
+![Роутинг траффика по версии приложения](result.png)
+
