@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-v2
+  namespace: default
+  labels:
+    app: echoserver
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echoserver
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: echoserver
+        version: v2
+    spec:
+      containers:
+        - name: echoserver
+          image: gigi0907/proxy-app
+          resources:
+            requests:
+              cpu: "100m"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080

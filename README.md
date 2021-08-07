@@ -86,3 +86,50 @@ spec:
 ```yaml
 minikube service -n <namespace> <service>
 ```
+
+## Запуск дз
+
+Создать неймспейсы для операторов:
+```shell script
+kubectl apply -f namespaces.yaml
+```
+
+Разворачиваем Jaeger
+```shell script
+helm install --version "2.19.0" -n jaeger-operator -f jaeger/operator-values.yaml \
+jaeger-operator jaegertracing/jaeger-operator
+```
+Развернуть Jaeger:
+```shell script
+kubectl apply -f jaeger/jaeger.yaml
+```
+Разворачиваем Prometheus
+```shell script
+helm install --version "13.7.2" -n monitoring -f prometheus/operator-values.yaml prometheus \
+prometheus-community/kube-prometheus-stack
+```
+```shell script
+kubectl apply -f prometheus/monitoring-nodeport.yaml
+```
+Разворачиваем Istio
+```shell script
+istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator
+```
+
+Устанавливаем Kiali
+```shell script
+helm install --version "1.33.1" -n kiali-operator kiali-operator kiali/kiali-operator
+```
+```shell script
+kubectl apply -f kiali/kiali.yaml
+```
+
+Устанавливаем приложение
+```shell script
+kubectl apply -f app/.
+```
+
+Устанавливаем Istio Gateway:
+```shell script
+kubectl apply -f istio/.
+```
