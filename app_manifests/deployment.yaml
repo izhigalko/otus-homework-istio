@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-demo-app-v1
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: istio-demo-app
+  template:
+    metadata:
+      labels:
+        app: istio-demo-app
+        version: v1
+    spec:
+      containers:
+      - name: istio-demo-app
+        image: istio-demo-app
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: VERSION
+            value: "1"
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          failureThreshold: 3
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-demo-app-v2
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: istio-demo-app
+  template:
+    metadata:
+      labels:
+        app: istio-demo-app
+        version: v2
+    spec:
+      containers:
+      - name: istio-demo-app
+        image: istio-demo-app
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: VERSION
+          value: "2"
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          failureThreshold: 3

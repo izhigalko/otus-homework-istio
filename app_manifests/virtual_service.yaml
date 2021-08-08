@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: istio-demo-app-virtual-service
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-demo-app-gateway
+  http:
+  - route:
+    - destination:
+        host: istio-demo-app.default.svc.cluster.local
+        port:
+          number: 80
+        subset: v1
+      weight: 50
+    - destination:
+        host: istio-demo-app.default.svc.cluster.local
+        port:
+          number: 80
+        subset: v2
+      weight: 50
