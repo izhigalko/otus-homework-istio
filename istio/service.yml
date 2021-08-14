@@ -10,11 +10,11 @@ spec:
   http:
     - route:
         - destination:
-            host: echoserver
+            host: echoserver.istio-system.svc.cluster.local
             subset: v1
           weight: 50
         - destination:
-            host: echoserver
+            host: echoserver.istio-system.svc.cluster.local
             subset: v2
           weight: 50
 
