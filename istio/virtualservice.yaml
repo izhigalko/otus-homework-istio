@@ -11,14 +11,10 @@ spec:
   http:
     - route:
         - destination:
-            host: echoserver
-            port:
-              number: 8080
+            host: echoserver.default.svc.cluster.local
             subset: v1
           weight: 50
         - destination:
-            host: echoserver
-            port:
-              number: 8080
+            host: echoserver.default.svc.cluster.local
             subset: v2
           weight: 50

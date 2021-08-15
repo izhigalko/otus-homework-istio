@@ -14,6 +14,8 @@ spec:
       version: v2
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
       labels:
         app: echoserver
         version: v2
