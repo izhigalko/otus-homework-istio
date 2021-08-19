@@ -26,22 +26,15 @@ spec:
   gateways:
     - echoserver-gateway
   http:
-    - match:
-      - uri:
-          prefix: /hello
-      route:
-        - destination:
-            port:
-              number: 8000
-            host: echoserver
-            subset: v1
-          weight: 50
-        - destination:
-            port:
-              number: 8000
-            host: echoserver
-            subset: v2
-          weight: 50
+    - route:
+      - destination:
+          host: echoserver
+          subset: v1
+        weight: 50
+      - destination:
+          host: echoserver
+          subset: v2
+        weight: 50
 
 ---
 
