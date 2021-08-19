@@ -1,88 +1,138 @@
-# Практика к занятию по теме "Service mesh на примере Istio"
+```shell script
+minikube start \
+--cpus=4 --memory=8g \
+--cni=flannel \
+--kubernetes-version="v1.19.0" \
+--extra-config=apiserver.enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,\
+DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset \
+--extra-config=apiserver.authorization-mode=Node,RBAC
+```
 
-## Зависимости
 
-Для выполнения задания вам потребуется установить зависимости:
+Создать неймспейсы для операторов:
 
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
-- [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
-- [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
+```shell script
+kubectl apply -f namespaces.yaml
+```
 
-## Содержание
+### Разворачиваем Prometheus
 
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
+Prometheus - система мониторинга. С помощью неё собираются метрики Service mesh.
 
-## Задачи
+Добавить репозиторий в Helm:
 
-Задание состоит из этапов
+```shell script
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo update
+```
 
-- Развернуть Minikube
-- Развернуть Istio c Ingress gateway
-- Развернуть две версии приложения с использованием Istio
-- Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
-- Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
+Развернуть решение по мониторингу на основе Prometheus:
 
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
+```shell script
+helm install --version "13.7.2" -n monitoring -f prometheus/operator-values.yaml prometheus prometheus-community/kube-prometheus-stack
+``` 
 
-## Инструкция по выполнению задания
+Проверить состояние компонентов мониторинга:
 
-- Сделать форк этого репозитория на Github
-- Выполнить задание в отдельной ветке
-- Создать Pull request с изменениями в этот репозиторий
+```shell script
+kubectl get po -n monitoring
+```
 
-## Лайфхаки по выполнению задания
+Добавить сервис типа NodePort для прямого доступа к Prometheus и Grafana:
 
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
+```shell script
+kubectl apply -f prometheus/monitoring-nodeport.yaml
+```
 
----
+Открыть web-интерфейс Grafana:
 
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
+```shell script
+minikube service -n monitoring prometheus-grafana-nodeport
+```
 
----
+Открыть web-интерфейс Prometheus:
 
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
+```shell script
+minikube service -n monitoring prom-prometheus-nodeport
+```
+
+
+### Разворачиваем Istio 
+
+Istio - Service mesh решение для облачных платформ, использующее Envoy.
+
+Установить оператор, разворачивающий Istio:
+
+```shell script
+istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator
+```
+
+Развернуть Istio c помощью оператора:
 
 ```shell script
 kubectl apply -f istio/istio-manifest.yaml
 ```
 
----
-
-Для выключения шифрования между прокси, нужно применить настройку:
+Проверить состояние Istio:
 
 ```shell script
-kubectl apply -f istio/defaults.yaml
+kubectl get all -n istio-system -l istio.io/rev=default
 ```
 
----
+### Устанавливаем Kiali
 
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
+Kiali - доска управления Service mesh
 
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
+Добавить репозиторий в Helm:
+
+```shell script
+helm repo add kiali https://kiali.org/helm-charts
+helm repo update
 ```
 
-Использовать специальную команду для доступа к сервису:
+Установить Kiali Operator, разворачивающий Kiali
 
-```yaml
-minikube service -n <namespace> <service>
+```shell script
+helm install --version "1.33.1" -n kiali-operator kiali-operator kiali/kiali-operator
+```
+
+Развернуть Kiali:
+
+```shell script
+kubectl apply -f kiali/kiali.yaml
+```
+
+Проверить состояние Kiali:
+
+```shell script
+kubectl get po -n kiali -l app.kubernetes.io/name=kiali
+```
+
+Открыть web-интерфейс Kiali:
+
+```shell script
+minikube service -n kiali kiali-nodeport
+```
+
+### Устанавливаем echoserver
+
+Echoserver - сервис, отдающий в виде текста параметры входящего HTTP запроса.
+
+Развернуть приложение `echoserver` в кластере:
+
+```shell script
+kubectl apply -f app/deployments.yaml
+```
+
+Проверить статус echoserver:
+
+```shell script
+kubectl get po -l "app=echoserver"
+```
+
+Настраиваем балансировку:
+
+```shell script
+kubectl apply -f app/gateway.yaml
 ```
