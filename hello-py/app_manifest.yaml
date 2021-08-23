@@ -18,7 +18,7 @@ spec:
   ports:
   - port: 80
     nodePort: 32080
-    targetPort: 8080
+    targetPort: 5000
     name: http
   selector:
     app: hello
@@ -47,8 +47,14 @@ spec:
       - name: hello
         image: adyakonov/hello-app:v1
         imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
         ports:
-        - containerPort: 8080
+        - containerPort: 5000
 
 ---
 apiVersion: apps/v1
@@ -74,5 +80,11 @@ spec:
       - name: hello
         image: adyakonov/hello-app:v2
         imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
         ports:
-        - containerPort: 8080
+        - containerPort: 5000
