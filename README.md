@@ -86,3 +86,85 @@ spec:
 ```yaml
 minikube service -n <namespace> <service>
 ```
+
+## Запуск
+
+```bash
+minikube start \
+--cpus=4 --memory=8g \
+--cni=flannel \
+--kubernetes-version="v1.19.0" \
+--extra-config=apiserver.enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,\
+DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset \
+--extra-config=apiserver.authorization-mode=Node,RBAC
+
+kubectl apply -f namespaces.yaml
+
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update
+
+helm install --version "2.19.0" -n jaeger-operator -f jaeger/operator-values.yaml \
+jaeger-operator jaegertracing/jaeger-operator
+
+kubectl apply -f jaeger/jaeger.yaml
+
+#check
+kubectl get po -n jaeger -l app.kubernetes.io/instance=jaeger
+
+#open
+minikube service -n jaeger jaeger-query-nodeport
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo update
+
+helm install --version "13.7.2" -n monitoring -f prometheus/operator-values.yaml prometheus \
+prometheus-community/kube-prometheus-stack
+
+#check
+kubectl get po -n monitoring
+
+kubectl apply -f prometheus/monitoring-nodeport.yaml
+
+#open
+minikube service -n monitoring prometheus-grafana-nodeport
+minikube service -n monitoring prom-prometheus-nodeport
+
+
+curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.0 sh -
+export PATH="$PATH:/home/alex/istio-1.9.0/bin"
+
+istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator
+kubectl apply -f istio/istio-manifest.yaml
+
+#check
+kubectl get all -n istio-system -l istio.io/rev=default
+
+helm repo add kiali https://kiali.org/helm-charts
+helm repo update
+
+helm install --version "1.33.1" -n kiali-operator kiali-operator kiali/kiali-operator
+
+kubectl apply -f kiali/kiali.yaml
+
+#change image version
+kubectl edit deploy -n kiali kiali
+
+#check
+kubectl get po -n kiali -l app.kubernetes.io/name=kiali
+
+minikube service -n kiali kiali-nodeport
+
+sudo docker login
+sudo docker build --network=host --build-arg service_version=v1 --tag adyakonov/hello-app:v1 .
+sudo docker push adyakonov/hello-app:v1
+sudo docker build --network=host --build-arg service_version=v2 --tag adyakonov/hello-app:v2 .
+sudo docker push adyakonov/hello-app:v2
+
+kubectl apply -f hello-py/app_manifest.yaml
+kubectl apply -f gateway.yaml
+
+minikube service hello
+
+curl "$(minikube service hello --url)/version?url=http://hello/"
+```
