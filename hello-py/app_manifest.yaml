@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    nodePort: 32080
+    targetPort: 8080
+    name: http
+  selector:
+    app: hello
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-v1
+  labels:
+    app: hello
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v1
+    spec:
+      containers:
+      - name: hello
+        image: adyakonov/hello-app:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-v2
+  labels:
+    app: hello
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v2
+    spec:
+      containers:
+      - name: hello
+        image: adyakonov/hello-app:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
