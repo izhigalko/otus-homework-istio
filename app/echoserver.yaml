@@ -14,7 +14,9 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8000
+    - port: 80
+      nodePort: 32080
+      targetPort: 8000
       name: "http"  # Istio требует явного указания протокола при определенных настройках
   selector:
     app: echoserver

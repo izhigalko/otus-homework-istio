@@ -27,14 +27,10 @@ spec:
         - destination:
             host: echoserver
             subset: v1
-            port:
-              number: 8000
           weight: 50
         - destination:
             host: echoserver
             subset: v2
-            port:
-              number: 8000
           weight: 50
 ---
 apiVersion: networking.istio.io/v1alpha3
