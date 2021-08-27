@@ -6,7 +6,6 @@ metadata:
   name: istio-system
   labels:
     istio-injection: disabled
-
 # Создать CRD, использующийся Istio operator'ом, чтобы развернуть Istio
 ---
 apiVersion: install.istio.io/v1alpha1
@@ -18,22 +17,19 @@ spec:
   components:
     base: # Базовые настройки. Роли, сервисы, CRD
       enabled: true
-
     istiod_remote: # Настройки, при которых уровень управления установлен вне кластера
       enabled: false
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
       - name: istio-ingressgateway
-        enabled: false
+        enabled: true
 
     egressGateways: # Общаая точка для выхода трафика из Service mesh
       - name: istio-egressgateway
         enabled: false
-
     cni: # Istio container network interface плагин, обеспечивает настройку сети POD
       enabled: true
       namespace: "kube-system"
-
     pilot: # Управление конфигурацией proxy
       enabled: true
       k8s:
@@ -45,16 +41,12 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
-
   values: # Настройки компонентов
     meshConfig: # Настройки Service mesh
-
       enableAutoMtls: false # Отключаем шифрование
       enableTracing: true # Включаем tracing
-
       defaultConfig: # Настройки proxy по-умолчанию
         concurrency: 1 # Количество воркеров
-
     global:
       proxy:
         autoInject: enabled
@@ -78,29 +70,24 @@ spec:
       tracer:
         zipkin:
           address: "jaeger-collector.jaeger:9411"
-
     istio_cni:
       enabled: true
-
     pilot:
       autoscaleEnabled: false
       traceSampling: 100.0
       enableProtocolSniffingForInbound: true
       enableProtocolSniffingForOutbound: true
-
     telemetry:
       enabled: true
       v2:
         enabled: true
         prometheus:
           enabled: true
-
     sidecarInjectorWebhook:
       enableNamespacesByDefault: true
       objectSelector:
         enabled: true
         autoInject: true
-
     cni:
       cniBinDir: /opt/cni/bin
       cniConfDir: /etc/cni/net.d
