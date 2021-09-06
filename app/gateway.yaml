@@ -27,7 +27,10 @@ spec:
   gateways:
     - default/echoserver-gateway
   http:
-    - route:
+    - match:
+        - uri:
+            prefix: /
+      route:
         - destination:
             host: echoserver
             subset: v1
@@ -36,7 +39,10 @@ spec:
             host: echoserver
             subset: v2
           weight: 50
-    - route:
+    - match:
+        - uri:
+            prefix: /
+      route:
         - destination:
             host: proxy-app
             subset: v1
