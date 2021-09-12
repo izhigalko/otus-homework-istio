@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: app-gateway
-  namespace: apps
+  namespace: default
 spec:
   selector:
     istio: ingressgateway
@@ -19,7 +19,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: app-virtualservice
-  namespace: apps
+  namespace: default
 spec:
   hosts:
     - "*"
@@ -32,13 +32,13 @@ spec:
       route:
         - destination:
             port:
-              number: 8000
+              number: 80
             host: homework
             subset: v1
           weight: 50
         - destination:
             port:
-              number: 8000
+              number: 80
             host: homework
             subset: v2
           weight: 50
@@ -48,8 +48,8 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: app
-  namespace: apps
+  name: app-destrule
+  namespace: default
 spec:
   host: homework
   trafficPolicy:
