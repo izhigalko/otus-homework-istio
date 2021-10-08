@@ -1,0 +1,71 @@
+##################################################################################################
+# Health service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: health
+  labels:
+    app: health
+    service: health
+spec:
+  selector:
+    app: health
+  ports:
+    - protocol: TCP
+      port: 8012
+      targetPort: 8000
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: health-v1
+    labels:
+      app: health
+      version: v1
+spec:
+    replicas: 1
+    selector:
+       matchLabels:
+          app: health
+          version: v1
+    template:
+       metadata:
+          labels:
+             app: health
+             version: v1
+       spec:
+          containers:
+          - name: health
+            image: helloips/health:1.0
+            ports:
+              - name: web 
+                containerPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: health-v2
+    labels:
+      app: health
+      version: v2
+spec:
+    replicas: 1
+    selector:
+       matchLabels:
+          app: health
+          version: v2
+    template:
+       metadata:
+          labels:
+             app: health
+             version: v2
+       spec:
+          containers:
+          - name: health
+            image: helloips/health:1.0
+            ports:
+              - name: web 
+                containerPort: 8000
+---
