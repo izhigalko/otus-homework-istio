@@ -1,0 +1,96 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: testapi
+  labels:
+    app: testapi
+    service: testapi
+spec:
+  selector:
+    app: testapi
+  type: NodePort
+  ports:
+    - port: 8888
+      targetPort: web
+      protocol: TCP
+      name: "http"
+   
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testapi-v1
+  labels:
+    app: testapi
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: testapi
+      version: v1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: testapi
+        version: v1
+    spec:
+      containers:            
+        - image: pierta/otus.project.mainapi
+          name: testapi
+          ports:
+            - name: web
+              containerPort: 80
+          livenessProbe:
+            httpGet:
+              port: web
+              path: /health
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testapi-v2
+  labels:
+    app: testapi
+    version: v2
+spec:
+  selector:
+    matchLabels:
+      app: testapi
+      version: v2
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: testapi
+        version: v2
+    spec:
+      containers:            
+        - image: pierta/otus.project.mainapi
+          name: testapi
+          ports:
+            - name: web
+              containerPort: 80
+          livenessProbe:
+            httpGet:
+              port: web
+              path: /health
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3

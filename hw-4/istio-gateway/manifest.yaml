@@ -1,0 +1,59 @@
+﻿apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: testapi-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: testapivs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - testapi-gateway
+  http:
+  - match:
+    - uri:
+        exact: /health
+    route:
+    - destination:
+        host: testapi
+        port: 
+          number: 8888
+        subset: v1
+      weight: 50
+    - destination:
+        host: testapi
+        port:
+          number: 8888
+        subset: v2
+      weight: 50
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: testapi
+spec:
+  host: testapi
+  subsets:
+  - name: v1
+    labels:
+      version: "v1"
+  - name: v2
+    labels:
+      version: "v2"
