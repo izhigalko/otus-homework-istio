@@ -86,3 +86,33 @@ spec:
 ```yaml
 minikube service -n <namespace> <service>
 ```
+
+## Настройка
+
+```shell
+# установка окружения
+minikube start --cpus=6 --memory=8g --vm-driver=virtualbox --cni=flannel --kubernetes-version="v1.19.0"
+istioctl install --set profile=demo -y
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/prometheus.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/kiali.yaml
+
+# запуск приложения
+kubectl apply -f ./gateway/namespace.yaml
+kubectl apply -f ./service/service.yaml
+kubectl apply -f ./gateway/istio-gateway.yaml
+
+# включение дашборда Kiali
+istioctl dashboard kiali
+
+# настройка доступа через minikube
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+export INGRESS_HOST=$(minikube ip)
+export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+
+# запускаем траффик на приложение
+ab -n 100 "$GATEWAY_URL/"
+```
+
+## Результаты работы
+
+![Балансировка траффика между версиями](docs/kiali-screenshot.png)

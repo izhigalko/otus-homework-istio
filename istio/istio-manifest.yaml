@@ -26,7 +26,7 @@ spec:
       - name: istio-ingressgateway
         enabled: false
 
-    egressGateways: # Общаая точка для выхода трафика из Service mesh
+    egressGateways: # Общая точка для выхода трафика из Service mesh
       - name: istio-egressgateway
         enabled: false
 
