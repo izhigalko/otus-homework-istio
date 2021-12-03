@@ -1,31 +1,70 @@
 # Практика к занятию по теме "Service mesh на примере Istio"
 
-## Зависимости
-
-Для выполнения задания вам потребуется установить зависимости:
-
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
-- [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
-- [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
-
-## Содержание
-
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
-
 ## Задачи
 
 Задание состоит из этапов
 
 - Развернуть Minikube
-- Развернуть Istio c Ingress gateway
-- Развернуть две версии приложения с использованием Istio
-- Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
-- Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
 
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
+```shell script
+minikube start --driver hyperv --cpus=4 --memory=6g --cni=flannel --kubernetes-version="v1.19.0"
+```
+
+- Развернуть Istio c Ingress gateway
+
+Создаем неймспейсы
+```shell script
+kubectl apply -f namespaces.yaml
+```
+
+Устанавливаем и разворачиваем jaeger и prometheus
+
+```shell script
+helm install --version "2.19.0" -n jaeger-operator -f jaeger/operator-values.yaml jaeger-operator jaegertracing/jaeger-operator
+kubectl apply -f jaeger/jaeger.yaml
+helm install --version "13.7.2" -n monitoring -f prometheus/operator-values.yaml prometheus prometheus-community/kube-prometheus-stack
+kubectl apply -f prometheus/monitoring-nodeport.yaml
+```
+
+Разворачиваем и настраиваем Istio
+
+```shell script
+istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator
+kubectl apply -f istio/istio.yaml
+kubectl apply -f istio/disable-mtls.yaml
+```
+
+Устанавливаем и разворачиваем Kiali
+
+```shell script
+helm install --version "1.33.1" -n kiali-operator -f kiali/operator-values.yaml kiali-operator kiali/kiali-operator
+kubectl apply -f kiali/kiali.yaml
+```
+
+- Развернуть две версии приложения с использованием Istio
+
+Разворачиваем две версии `echoserver`
+
+Собрать Docker-образ:
+
+```shell script
+eval $(minikube docker-env) && docker build -t proxy-app:latest -f app/src/Dockerfile app/src
+```
+
+Развернуть приложение `echoserver` в кластере:
+
+```shell script
+kubectl apply -f app/echoserver.yaml
+```
+
+- Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
+
+```shell script
+kubectl apply -f .\istio\gateway.yaml
+```
+
+- Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
+![Пример карты сервисов с балансировкой трафика между версиями](After.PNG)
 
 ## Инструкция по выполнению задания
 
