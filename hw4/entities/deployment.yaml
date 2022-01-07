@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw4-1
+  labels:
+    app: hw4
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw4
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: hw4
+        version: v1
+    spec:
+      containers:
+        - name: hw4-container
+          image: diacrome/node-web-app
+          ports:
+              - containerPort: 8000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw4-2
+  labels:
+    app: hw4
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw4
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: hw4
+        version: v2
+    spec:
+      containers:
+        - name: hw4-container
+          image: diacrome/node-web-app
+          ports:
+            - containerPort: 8000

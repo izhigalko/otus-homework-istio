@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hw4-service
+  labels:
+    app: hw4
+    service: hw4-service
+spec:
+  selector:
+    app: hw4
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 31317
+      protocol: TCP
+      name: "http"

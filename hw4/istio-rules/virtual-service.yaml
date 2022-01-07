@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hw4-virtual-service
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - hw4-gateway
+  http:
+    - match:
+        - uri:
+            exact: /health
+      route:
+        - destination:
+            host: hw4-service
+            port:
+              number: 31317
+            subset: v1
+          weight: 50
+        - destination:
+            host: hw4-service
+            port:
+              number: 31317
+            subset: v2
+          weight: 50
