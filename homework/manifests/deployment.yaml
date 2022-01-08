@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otus-hw-4-deployment-v1
+  labels:
+    app: otus-hw-4
+spec:
+  selector:
+    matchLabels:
+      app: otus-hw-4
+      version: ver1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: otus-hw-4
+        version: ver1
+    spec:
+      containers:
+        - image: nginx:latest
+          name: otus-hw-nginx
+          ports:
+            - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otus-hw-4-deployment-v2
+  labels:
+    app: otus-hw-4
+spec:
+  selector:
+    matchLabels:
+      app: otus-hw-4
+      version: ver2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: otus-hw-4
+        version: ver2
+    spec:
+      containers:
+        - image: httpd:latest
+          name: otus-hw-httpd
+          ports:
+            - containerPort: 80

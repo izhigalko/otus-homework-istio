@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: otus-hw-4-vs
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - otus-hw-4-gateway
+  http:
+    - route:
+        - destination:
+            host: otus-hw-4-service
+            port:
+              number: 80
+            subset: v1
+          weight: 50
+        - destination:
+            host: otus-hw-4-service
+            port:
+              number: 80
+            subset: v2
+          weight: 50
