@@ -18,7 +18,6 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: "2020-09-30T11:18:43Z"
   labels:
     app: jaeger
     app.kubernetes.io/component: service-query
