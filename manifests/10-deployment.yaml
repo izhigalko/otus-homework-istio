@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: someapp-v1-deployment
+  namespace: my-app
+  labels:
+    app: someapp
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: someapp
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: someapp
+        version: v1
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: someapp-v2-deployment
+  namespace: my-app
+  labels:
+    app: someapp
+    version: v2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: someapp
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: someapp
+        version: v2
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        ports:
+        - containerPort: 80

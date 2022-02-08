@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: someapp-virtualservice
+  namespace: my-app
+spec:
+  hosts:
+  - "*"
+  gateways:
+    - someapp-gateway
+  http:
+  - route:
+    - destination:
+        subset: v1
+        host: someapp-service
+        port:
+          number: 80
+      weight: 50
+    - destination:
+        subset: v2
+        host: someapp-service
+        port:
+          number: 80
+      weight: 50
