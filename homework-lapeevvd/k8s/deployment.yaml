@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservices-arch-deployment-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lvd-ma
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: lvd-ma
+        version: v1
+    spec:
+      containers:
+        - name: microservices-arch-application
+          image: lapeevvd/microservice-architecture:1.0-without-db
+          ports:
+            - name: web
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /health
+            initialDelaySeconds: 1
+            periodSeconds: 5
+            timeoutSeconds: 2
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservices-arch-deployment-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lvd-ma
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: lvd-ma
+        version: v2
+    spec:
+      containers:
+        - name: microservices-arch-application
+          image: lapeevvd/microservice-architecture:1.0-without-db
+          ports:
+            - name: web
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /health
+            initialDelaySeconds: 1
+            periodSeconds: 5
+            timeoutSeconds: 2
