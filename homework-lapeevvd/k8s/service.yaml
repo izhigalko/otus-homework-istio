@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: microservices-arch-service
+  labels:
+    app: lvd-ma
+spec:
+  selector:
+    app: lvd-ma
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: web
+      name: "http-microservices-arch-service"
