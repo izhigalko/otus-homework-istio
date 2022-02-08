@@ -31,7 +31,7 @@ kubectl apply -f ./manifests/
 ```shell
 kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
 ```
-### Получаем роут на хост-машине к сервису
+### Добавляем роут на хост-машине к сервису
 ```shell
 minikube tunnel
 ```
@@ -39,4 +39,7 @@ minikube tunnel
 Видим дефолтную страницу nginx. Несколько раз обновляем страницу.
 
 ## Переходим в kiali, смотрим Dashboard
+```shell
+istioctl dashboard kiali
+```
 ![Результат](kiali-dashboard-result.png)
