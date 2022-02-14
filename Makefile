@@ -31,5 +31,11 @@ istio:
 
 .PHONY: kiali
 kiali:
-	kubectl apply -f namespaces.yaml
+	@operators/kiali/install.sh
 
+.PHONY: install
+install: namespaces jaeger prometheus istio kiali
+
+.PHONY: build_app
+build_app:
+	eval $(minikube docker-env) && docker build -t proxy-app:latest -f app/src/Dockerfile app/src

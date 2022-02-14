@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: meredian
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver
+  namespace: meredian
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: "http"  # Istio требует явного указания протокола при определенных настройках
+  selector:
+    app: echoserver
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-v1
+  namespace: meredian
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: echoserver
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: echoserver
+        version: v1
+    spec:
+      containers:
+        - name: echoserver
+          image: proxy-app
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-v2
+  namespace: meredian
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: echoserver
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: echoserver
+        version: v2
+    spec:
+      containers:
+        - name: echoserver
+          image: proxy-app
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
