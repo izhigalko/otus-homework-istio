@@ -1,6 +1,6 @@
 KUBERNETES_VERSION := v1.19.0
 
-all: namespaces jaeger prometheus istio
+all: install_operators build_app deploy_app
 
 .PHONY: minikube
 minikube:
@@ -33,9 +33,13 @@ istio:
 kiali:
 	@operators/kiali/install.sh
 
-.PHONY: install
-install: namespaces jaeger prometheus istio kiali
+.PHONY: install_operators
+install_operators: namespaces jaeger prometheus istio kiali
 
 .PHONY: build_app
 build_app:
-	eval $(minikube docker-env) && docker build -t proxy-app:latest -f app/src/Dockerfile app/src
+	@app/build.sh
+
+.PHONY: deploy_app
+deploy_app:
+	kubectl apply -f app
