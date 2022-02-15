@@ -13,14 +13,14 @@ spec:
             exact: /health
       route:
         - destination:
-            host: service
+            host: service.default.svc.cluster.local
             port:
-              number: 31000
+              number: 8000
             subset: v1
           weight: 50
         - destination:
             host: service
             port:
-              number: 31000
+              number: 8000
             subset: v2
           weight: 50
