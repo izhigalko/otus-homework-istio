@@ -1,3 +1,28 @@
+# Домашнее задание
+
+Запуск minicube: <br>
+```
+minikube start --driver virtualbox --cpus=4 --memory=8g --cni=flannel --kubernetes-version="v1.19.0"
+```
+
+Установка Istio:<br>
+```
+istioctl install --set profile=demo -y
+```
+
+Разворот приложения: <br>
+```
+kubectl apply -f . &&
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/prometheus.yaml &&
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/kiali.yaml &&
+kubectl label namespace default istio-injection=enabled &&
+kubectl apply -f ./istio
+```
+
+Просмотр графа:
+```
+istioctl dashboard kiali
+```
 # Практика к занятию по теме "Service mesh на примере Istio"
 
 ## Зависимости
