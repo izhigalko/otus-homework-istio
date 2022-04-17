@@ -1,88 +1,98 @@
 # Практика к занятию по теме "Service mesh на примере Istio"
 
-## Зависимости
+## Установка компонентов
+### Подготовка
+Установить istioctl любым удобным способом.
 
-Для выполнения задания вам потребуется установить зависимости:
-
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
-- [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
-- [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
-
-## Содержание
-
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
-
-## Задачи
-
-Задание состоит из этапов
-
-- Развернуть Minikube
-- Развернуть Istio c Ingress gateway
-- Развернуть две версии приложения с использованием Istio
-- Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
-- Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
-
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
-
-## Инструкция по выполнению задания
-
-- Сделать форк этого репозитория на Github
-- Выполнить задание в отдельной ветке
-- Создать Pull request с изменениями в этот репозиторий
-
-## Лайфхаки по выполнению задания
-
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
-
----
-
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
-
----
-
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
-
-```shell script
-kubectl apply -f istio/istio-manifest.yaml
+Установить namespaces:
+```
+kubectl apply -f .\namespaces.yaml
 ```
 
----
-
-Для выключения шифрования между прокси, нужно применить настройку:
-
-```shell script
-kubectl apply -f istio/defaults.yaml
+Добавить необходимые репозитории в Helm:
+```
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add stable https://charts.helm.sh/stable
+helm repo add kiali https://kiali.org/helm-charts
+helm repo update
+```
+### Jaeger
+Установить оператор, устанавливающий Jaeger:
+```
+helm install --version "2.19.0" -n jaeger-operator -f ./jaeger/operator-values.yaml jaeger-operator jaegertracing/jaeger-operator
 ```
 
----
-
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
-
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
+Установить Jaeger:
+```
+kubectl apply -f ./jaeger/jaeger.yaml
 ```
 
-Использовать специальную команду для доступа к сервису:
+### Prometheus
+Установить Prometheus:
+```
+helm install --version "13.7.2" -n monitoring -f ./prometheus/operator-values.yaml prometheus prometheus-community/kube-prometheus-stack
+```
 
-```yaml
-minikube service -n <namespace> <service>
+Добавить сервис типа NodePort для прямого доступа к Prometheus и Grafana:
+```
+kubectl apply -f ./prometheus/monitoring-nodeport.yaml
+```
+
+### Istio
+Установить оператор:
+```
+istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator
+```
+
+Установить Istio:
+```
+kubectl apply -f ./istio/istio.yaml
+```
+
+Установить настройки шифрования:
+```
+kubectl apply -f ./istio/defaults.yaml
+```
+### Kiali
+Установить Operator:
+```
+helm install --version "1.33.1" -n kiali-operator -f ./kiali/operator-values.yaml kiali-operator kiali/kiali-operator
+```
+
+Установить Kiali:
+```
+kubectl apply -f ./kiali/kiali.yaml
+```
+
+## Проверка компонентов
+Jaeger:
+```
+kubectl get po -n jaeger -l app.kubernetes.io/instance=jaeger
+```
+Prometheus:
+```
+kubectl get po -n monitoring
+```
+Istio:
+```
+kubectl get all -n istio-system -l istio.io/rev=default
+```
+Kiali:
+```
+kubectl get po -n kiali -l app.kubernetes.io/name=kiali
+```
+
+## Панели управления компонентами
+Jaeger:
+```
+minikube service -n jaeger jaeger-query-nodeport
+```
+Prometheus:
+```
+minikube service -n monitoring prom-prometheus-nodeport
+```
+Kiali:
+```
+minikube service -n kiali kiali-nodeport
 ```
