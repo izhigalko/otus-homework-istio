@@ -14,7 +14,7 @@ metadata:
   namespace: kiali
 spec:
   deployment:
-    image_version: "v1.33.1"
+    image_version: "v1.49.0"
   istio_namespace: "istio-system"
   istio_component_namespaces:
     prometheus: monitoring
