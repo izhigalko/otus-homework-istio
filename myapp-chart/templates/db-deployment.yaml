@@ -1,0 +1,39 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-db-deployment
+  labels:
+    app: {{ .Release.Name }}-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-db
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      containers:
+      - image: {{ .Values.mysql.image }}
+        name: {{ .Release.Name }}-db
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: DbPassword
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-db-pv-data

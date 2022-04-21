@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-migration-job
+spec:
+  template:
+    metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"  
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-migration
+        image: {{ .Values.migrator.image }}
+        imagePullPolicy: Always
+        env:
+          - name: "ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: ConnectionString
+          - name: "DbName"
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                key: dbname
+      restartPolicy: Never
+  backoffLimit: 10
