@@ -52,3 +52,6 @@ minikube -n istio-system service istio-ingressgateway
 ```
 istioctl dashboard kiali
 ```
+
+### Карта сервисов
+![Map](screenshot.png)
