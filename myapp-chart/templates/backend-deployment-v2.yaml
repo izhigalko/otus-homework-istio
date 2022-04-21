@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myappbackend-v2
+  labels:
+    app: myappbackend
+    version: v2
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: myappbackend
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: myappbackend
+        version: v2
+    spec:
+      serviceAccountName: sa-myappbackend
+      containers:
+        - name: myappbackend
+          image: {{ .Values.backend.imagesecond }}
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 80
+            successThreshold: 3
+          env:
+            - name: "ConnectionString"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: ConnectionString
+            - name: "DbName"
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: dbname
+          ports:
+            - containerPort: 80

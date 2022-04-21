@@ -19,19 +19,36 @@ kubectl label namespace default istio-injection=enabled
 helm install lisitsynapp .\myapp-chart\ -f .\myapp-chart\values.yaml
 ```
 
-### Istion Gateway and VirtualService
+### Istio Services
 Установить объекты Istio
 ```
 kubectl apply -f .\istio\istio.yaml
 ```
 
-### Kiali
-Установить Operator:
+Проверить, что все ок
 ```
-helm install --version "1.49.0" -n kiali-operator -f ./kiali/operator-values.yaml kiali-operator kiali/kiali-operator
+istioctl analyze
 ```
 
+### Kiali
 Установить Kiali:
 ```
-kubectl apply -f ./kiali/kiali.yaml
+kubectl apply -f kiali
+kubectl rollout status deployment/kiali -n istio-system
+```
+
+### Протестировать
+Открыть сервис в браузере через istio-ingressgateway:
+```
+minikube -n istio-system service istio-ingressgateway
+```
+
+Поотправлять запросы на endpoint
+```
+<servicehost>/users
+```
+
+Посмотреть граф в Kiali
+```
+istioctl dashboard kiali
 ```
