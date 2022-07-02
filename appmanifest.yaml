@@ -3,9 +3,9 @@ kind: Namespace
 metadata:
   name: default
   labels:
-    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
+    istio-injection: enabled # Р’РєР»СЋС‡Р°РµРј РёРЅР¶РµРєС‚ СЃР°Р№РґРєР°СЂРѕРІ Istio РґР»СЏ РЅРµР№РјСЃРїРµР№СЃР°
 ---
-#Конфигурация сервиса версии v1
+#РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЃРµСЂРІРёСЃР° РІРµСЂСЃРёРё v1
 apiVersion: v1
 kind: Pod
 metadata:
@@ -36,7 +36,7 @@ spec:
     version: v1
   type: ClusterIP
 ---
-#Конфигурация сервиса версии v2
+#РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЃРµСЂРІРёСЃР° РІРµСЂСЃРёРё v2
 apiVersion: v1
 kind: Pod
 metadata:
@@ -67,7 +67,7 @@ spec:
     version: v2
   type: ClusterIP
 ---
-#GateWay для сервисов
+#GateWay РґР»СЏ СЃРµСЂРІРёСЃРѕРІ
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -84,7 +84,7 @@ spec:
     hosts:
     - "*"
 ---
-#Виртуальный сервис для балансировки 50 / 50
+#Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№ СЃРµСЂРІРёСЃ РґР»СЏ Р±Р°Р»Р°РЅСЃРёСЂРѕРІРєРё 50 / 50
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
