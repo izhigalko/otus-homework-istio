@@ -1,0 +1,68 @@
+#NGINX server v1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-server-v1
+  namespace: nginx-app
+  labels:
+    app: nginx-server
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-server
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: nginx-server
+        version: v1
+    spec:
+      containers:
+        - image: nginx:1.23.0
+          name: nginx-srv
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+
+---
+#NGINX server v2
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-server-v2
+  namespace: nginx-app
+  labels:
+    app: nginx-server
+    version: v2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-server
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: nginx-server
+        version: v2
+    spec:
+      containers:
+        - image: nginx:1.23.0
+          name: nginx-srv
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
