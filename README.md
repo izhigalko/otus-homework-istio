@@ -53,4 +53,4 @@ istioctl dashboard kiali
 ```
 
 # Результат
-![otus-hw-4](kiali-map-final.png)
+![kiali-map-final](kiali-map-final.png)
