@@ -1,88 +1,43 @@
 # Практика к занятию по теме "Service mesh на примере Istio"
 
-## Зависимости
-
-Для выполнения задания вам потребуется установить зависимости:
-
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
-- [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
-- [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
-
-## Содержание
-
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
-
 ## Задачи
 
 Задание состоит из этапов
 
-- Развернуть Minikube
 - Развернуть Istio c Ingress gateway
 - Развернуть две версии приложения с использованием Istio
 - Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
 - Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
 
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
+![Пример карты сервисов с балансировкой трафика между версиями](kiali.png)
 
-## Инструкция по выполнению задания
 
-- Сделать форк этого репозитория на Github
-- Выполнить задание в отдельной ветке
-- Создать Pull request с изменениями в этот репозиторий
+colima version
 
-## Лайфхаки по выполнению задания
+    colima version 0.4.4
+    git commit: 8bb1101a861a8b6d2ef6e16aca97a835f65c4f8f
+    
+    runtime: docker
+    arch: aarch64
+    client: v20.10.12
+    server: v20.10.11
+    
+    kubernetes
+    Client Version: v1.23.6
+    Server Version: v1.23.6+k3s1
 
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
+istioctl version   
 
----
+    client version: 1.14.1
+    control plane version: 1.14.1
+    data plane version: 1.14.1 (6 proxies)
 
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
+kubectl version
 
----
+    Client Version: version.Info{Major:"1", Minor:"23", GitVersion:"v1.23.6", 
+        GitCommit:"ad3338546da947756e8a88aa6822e9c11e7eac22", GitTreeState:"clean", 
+        BuildDate:"2022-04-14T08:41:58Z", GoVersion:"go1.18.1", Compiler:"gc", Platform:"darwin/arm64"}
+    Server Version: version.Info{Major:"1", Minor:"23", GitVersion:"v1.23.6+k3s1",
+        GitCommit:"418c3fa858b69b12b9cefbcff0526f666a6236b9", GitTreeState:"clean",
+        BuildDate:"2022-04-28T22:16:58Z", GoVersion:"go1.17.5", Compiler:"gc", Platform:"linux/arm64"}
 
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
-
-```shell script
-kubectl apply -f istio/istio-manifest.yaml
-```
-
----
-
-Для выключения шифрования между прокси, нужно применить настройку:
-
-```shell script
-kubectl apply -f istio/defaults.yaml
-```
-
----
-
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
-
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
-```
-
-Использовать специальную команду для доступа к сервису:
-
-```yaml
-minikube service -n <namespace> <service>
-```
