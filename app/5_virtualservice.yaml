@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: otus-virtualservice
+  namespace: otus-app
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - otus-gateway
+  http:
+    - route:
+        - destination:
+            subset: v1
+            host: otus-service
+            port:
+              number: 80
+          weight: 50
+        - destination:
+            subset: v2
+            host: otus-service
+            port:
+              number: 80
+          weight: 50
