@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backends
+  labels:
+    istio-injection: enabled
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kiali-operator
+  labels:
+    istio-injection: disabled
