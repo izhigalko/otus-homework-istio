@@ -1,0 +1,25 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backends-virtualservice
+  namespace: backends
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - backends-gateway
+  http:
+    - route:
+        - destination:
+            subset: v1
+            host: backend-service
+            port:
+              number: 80
+          weight: 50
+        - destination:
+            subset: v2
+            host: backend-service
+            port:
+              number: 80
+          weight: 50
