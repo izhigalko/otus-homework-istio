@@ -1,13 +1,10 @@
-# Практика к занятию по теме "Service mesh на примере Istio"
+# Домашняя работа к занятию по теме "Service mesh на примере Istio"
 
 ## Зависимости
 
-Для выполнения задания вам потребуется установить зависимости:
+Для выполнения задания вам потребуется скачать релиз istio со всеми необходимыми зависимостями внутри:
 
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
-- [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
-- [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
+https://github.com/istio/istio/releases/tag/1.14.3
 
 ## Содержание
 
@@ -25,64 +22,60 @@
 - Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
 - Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
 
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
-
 ## Инструкция по выполнению задания
 
 - Сделать форк этого репозитория на Github
 - Выполнить задание в отдельной ветке
 - Создать Pull request с изменениями в этот репозиторий
 
-## Лайфхаки по выполнению задания
+## Для запуска проекта потребуется
 
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
+- Разворачиваем minikube в Docker Desctop под Windows
 
----
+- После скачивания релиза Istio заходим в папку istio-1.14.3-win\istio-1.14.3\bin и прописываем istioctl в path 
 
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
+- Устанавливаем istio командой: 
+  ~~~~
+  istioctl install
+  ~~~~
 
----
+- Переходим в папку со скаченным релизом: **cd АДРЕС_ДО_РЕЛИЗА\istio-1.14.3-win\istio-1.14.3**
 
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
+- Устанавливаем аддоны: 
+  ~~~~
+  kubectl apply -f samples/addons
+  ~~~~
 
-```shell script
-kubectl apply -f istio/istio-manifest.yaml
-```
+- Проверяем, что все корректно работает
 
----
+  ~~~~
+  kubectl get services -n istio-system
+  ~~~~
+  
+  ~~~~
+  kubectl get services -n istio-system
+  ~~~~
+  
+- Пробрасываем все необходимые порты, например kiali
+  ~~~~
+  kubectl port-forward service/kiali   20001:20001 -n istio-system
+  ~~~~
+  
+- Создаем namespace
+   ~~~~
+   kubectl create namespace istio-backend
+   ~~~~
+  
+- Переходим в папку проекта manifests: **cd "АДРЕС_ДО_ПРОЕКТА\otus-homework-istio\manifests"**. 
+  Предварительно с помощью Dockerfile из папки **otus-homework-istio\app\src** был сделан образ echoservice и залит на DockerHub.
+- Применяем манифесты
 
-Для выключения шифрования между прокси, нужно применить настройку:
-
-```shell script
-kubectl apply -f istio/defaults.yaml
-```
-
----
-
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
-
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
-```
-
-Использовать специальную команду для доступа к сервису:
-
-```yaml
-minikube service -n <namespace> <service>
-```
+  ~~~~
+  kubectl apply -f .  
+  ~~~~
+  
+ - Нагружаем приложение http://localhost/ трафиком
+ 
+ - Переходим в kiali и видим граф 
+  
+  ![Пример карты сервисов с балансировкой трафика между версиями](kiali-grath.jpg)
