@@ -6,14 +6,8 @@
 
 - [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
 - [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
+- [Istioctl 1.14.3](https://github.com/istio/istio/releases/tag/1.14.3)
 - [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
-
-## Содержание
-
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
 
 ## Задачи
 
@@ -32,57 +26,63 @@
 - Сделать форк этого репозитория на Github
 - Выполнить задание в отдельной ветке
 - Создать Pull request с изменениями в этот репозиторий
-
-## Лайфхаки по выполнению задания
-
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
-
+- 
 ---
-
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
-
----
-
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
+Запускаем миникуб 
 
 ```shell script
-kubectl apply -f istio/istio-manifest.yaml
+minikube -p minikube2 start --driver virtualbox --cpus=4 --memory=8g --cni=flannel --kubernetes-version="v1.19.0"
 ```
 
----
 
-Для выключения шифрования между прокси, нужно применить настройку:
+Устанавливаем Istio
 
 ```shell script
-kubectl apply -f istio/defaults.yaml
+curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.14.3 TARGET_ARCH=x86_64 sh -
+cd istio-1.14.3/
+export PATH=$PWD/bin:$PATH
+istioctl install
+kubectl apply -f samples/addons
+```
+
+Проверим что все работает
+
+```shell script
+kubectl get services -n istio-system
+```
+
+Открываем dashboard Kiali
+
+```shell script
+istioctl dashboard kiali
 ```
 
 ---
 
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
+Развернем 2 версии нашего приложения
 
-```yaml
+```shell script
+kubectl apply -f manifests
+```
+
+Проверим что все работает
+
+```shell script
+kubectl get services -n apps
+```
+
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
+
+Получаем адрес по которому живет ingressgateway
+```shell script
+minikube ip
+kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
 ```
 
-Использовать специальную команду для доступа к сервису:
 
-```yaml
-minikube service -n <namespace> <service>
+Нагрудаем приложение
+```shell script
+watch -n 1 curl {minikube_ip}:{ingressgateway_port}
 ```
+
+![Результат](kiali_map.png)
