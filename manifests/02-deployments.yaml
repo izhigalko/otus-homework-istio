@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld
+  namespace: apps
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 80
+      name: "http"
+  selector:
+    app: helloworld
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-v1
+  namespace: apps
+  labels:
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: helloworld
+        version: v1
+    spec:
+      containers:
+        - image: harik8/demo:v1
+          name: helloworld
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-v2
+  namespace: apps
+  labels:
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: helloworld
+        version: v2
+    spec:
+      containers:
+        - image: harik8/demo:v2
+          name: helloworld
