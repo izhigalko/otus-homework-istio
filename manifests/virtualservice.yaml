@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: echoserver-virtualservice
+spec:
+  hosts:
+    - arch.homework
+  gateways:
+    - main-gateway
+  http:
+    - route:
+        - destination:
+            host: echoserver.default.svc.cluster.local
+            subset: v1
+          weight: 50
+        - destination:
+           host: echoserver.default.svc.cluster.local
+           subset: v2
+          weight: 50
