@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: echoserver-ds
+spec:
+  host: echoserver
+  trafficPolicy:
+    loadBalancer:
+      simple: UNSPECIFIED
+  subsets:
+  - name: v2
+    labels:
+      version: "2"
+  - name: v1
+    labels:
+      version: "1"
