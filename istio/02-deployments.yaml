@@ -6,8 +6,9 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 3000
-      targetPort: 80
+    - port: 80
+      nodePort: 32080
+      targetPort: 3000
       name: "http"
   selector:
     app: tarantool
@@ -34,7 +35,7 @@ spec:
     spec:
       containers:
         - image: jdkz/tarantool_usercms:v1
-          name: tarantool
+          name: tarantool-v1
           ports:
             - containerPort: 3000
 ---
@@ -60,6 +61,6 @@ spec:
     spec:
       containers:
         - image: jdkz/tarantool_usercms:v2
-          name: tarantool
+          name: tarantool-v2
           ports:
             - containerPort: 3000
