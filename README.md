@@ -74,7 +74,7 @@ https://github.com/istio/istio/releases/tag/1.14.3
   kubectl apply -f .  
   ~~~~
   
- - Нагружаем приложение http://localhost/ трафиком
+ - Нагружаем приложение http://localhost/ трафиком по ручке http://localhost/api/user_cms/gen_code (в ответе будет различаться поле version)
  
  - Переходим в kiali и видим граф 
   
