@@ -1,4 +1,4 @@
-# Практика к занятию по теме "Service mesh на примере Istio"
+# Домашняя работа к занятию по теме "Service mesh на примере Istio"
 
 ## Зависимости
 
@@ -25,64 +25,79 @@
 - Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
 - Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
 
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
-
 ## Инструкция по выполнению задания
 
 - Сделать форк этого репозитория на Github
 - Выполнить задание в отдельной ветке
 - Создать Pull request с изменениями в этот репозиторий
 
-## Лайфхаки по выполнению задания
 
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
+## Развертывание решения
 
----
+### Предварительная подготовка
+Для выполнения задания вам потребуется скачать релиз istio со всеми необходимыми зависимостями внутри:
 
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
+https://github.com/istio/istio/releases/tag/1.13.0
 
----
+- После скачивания релиза Istio необходимо добавить каталог в переменные окружения ./istio-1.13.0/bin
 
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
+- Устанавливаем istio
+~~~
+istioctl install
+~~~
 
-```shell script
-kubectl apply -f istio/istio-manifest.yaml
+### Устанавливаем дополнения
+- Переходим в каталог ./istio-1.13.0
+
+~~~
+kubectl apply -f samples/addons
+~~~
+
+- Проверяем корректность установки
+```bash
+kubectl get services -n istio-system
 ```
 
----
+![install_istio_addons.png](./picts/install_istio_addons.png)
 
-Для выключения шифрования между прокси, нужно применить настройку:
+### Выполняем развертывание проекта
 
-```shell script
-kubectl apply -f istio/defaults.yaml
+```bash
+kubectl apply -f namespaces.yaml
+kubectl apply -f ./manifests
 ```
 
----
 
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
+### Тестирование
 
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
+#### Нагружаем приложение
+```bash
+kubectl -n istio-system get services
 ```
 
-Использовать специальную команду для доступа к сервису:
+![install_istio_addons.png](./picts/install_istio_addons.png)
 
-```yaml
-minikube service -n <namespace> <service>
+Смотрим IP для "istio-ingressgateway"
 ```
+istio-ingressgateway   LoadBalancer   10.101.158.60    <pending>     15021:31544/TCP,80:30632/TCP,443:32424/TCP   24h
+```
+
+```bash
+minikube ssh
+```
+
+В нем выполняем запросы для создания "нагрузки" по IP для "istio-ingressgateway"
+```bash
+watch -n 1 curl 10.101.158.60
+```
+
+#### Проверяем результат в консоле kiali
+
+Для открытия дашборда в браузере выполняем
+```bash
+istioctl dashboard kiali
+```
+
+![kiali_1.png](./picts/kiali_1.png)
+
+![kiali_2.png](./picts/kiali_2.png)
