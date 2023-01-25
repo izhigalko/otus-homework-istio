@@ -15,7 +15,7 @@ spec:
   type: NodePort
   ports:
     - port: 80
-      nodePort: 32080
+      #nodePort: 32080
       targetPort: 8080
       name: "http"  # Istio требует явного указания протокола при определенных настройках
   selector:
@@ -80,7 +80,7 @@ spec:
           ports:
             - containerPort: 8080
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: echoserver-gateway
@@ -128,11 +128,11 @@ spec:
             subset: v1
             host: echoserver
             port:
-              number: 8080
+              number: 80
           weight: 50
         - destination:
             subset: v2
             host: echoserver
             port:
-              number: 8080
+              number: 80
           weight: 50
