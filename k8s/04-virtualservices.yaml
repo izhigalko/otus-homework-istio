@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: otus-istio-virtual-services
+  namespace: otus-istio
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - http-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: otus-istio
+            subset: v1
+          weight: 50
+        - destination:
+            host: otus-istio
+            subset: v2
+          weight: 50
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: otus-istio
+  namespace: otus-istio
+spec:
+  host: otus-istio
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2

@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: otus-istio
+  namespace: otus-istio
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 80
+      name: "http"
+  selector:
+    app: otus-istio
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otus-istio-v1
+  namespace: otus-istio
+  labels:
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otus-istio
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: otus-istio
+        version: v1
+    spec:
+      containers:
+        - image: peretrus/otus_microservice:istio
+          name: otus-istio
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otus-istio-v2
+  namespace: otus-istio
+  labels:
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otus-istio
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: otus-istio
+        version: v2
+    spec:
+      containers:
+        - image: peretrus/otus_microservice:istiov2
+          name: otus-istio
