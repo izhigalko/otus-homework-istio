@@ -42,6 +42,11 @@ helm repo add kiali https://kiali.org/helm-charts
 helm repo update
 ```
 
+- Создание пространств имён
+```shell
+kubectl apply -f ./namespaces.yaml
+```
+
 - Установка стека Prometheus для Kubernetes
 ```shell
 helm install --namespace monitoring --create-namespace prometheus prometheus-community/kube-prometheus-stack -f ./prometheus/operator-values.yaml --atomic
@@ -75,6 +80,12 @@ kubectl apply -f ./istio/istio.yaml
 helm install --namespace kiali-operator --create-namespace kiali-operator kiali/kiali-operator
 kubectl apply -f ./kiali/kiali.yaml
 kubectl apply -f ./kiali/node-ports.yaml
+```
+
+- Разворачивание приложения hello и Istio-ингресса к нему
+```shell
+kubectl apply -f ./app/app.yaml
+kubectl apply -f ./app/istio-ingress.yaml
 ```
 
 ## Лайфхаки по выполнению задания

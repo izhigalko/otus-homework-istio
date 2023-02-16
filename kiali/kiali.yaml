@@ -1,12 +1,3 @@
-# Создаем ns
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: kiali
-  labels:
-    istio-injection: enabled
-
 # Создаем CRD для kiali-operator
 ---
 apiVersion: kiali.io/v1alpha1

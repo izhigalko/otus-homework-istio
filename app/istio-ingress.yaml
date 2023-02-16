@@ -1,0 +1,54 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: hello
+  namespace: hello
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: hello
+  namespace: hello
+spec:
+  host: hello
+  subsets:
+    - name: "v1.0.0"
+      labels:
+        version: "v1.0.0"
+    - name: "v1.0.1"
+      labels:
+        version: "v1.0.1"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: hello
+  namespace: hello
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - hello
+  http:
+    - route:
+        - destination:
+            host: hello
+            subset: "v1.0.0"
+          weight: 50
+        - destination:
+            host: hello
+            subset: "v1.0.1"
+          weight: 50
