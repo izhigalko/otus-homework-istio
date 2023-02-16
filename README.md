@@ -4,10 +4,10 @@
 
 Для выполнения задания вам потребуется установить зависимости:
 
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
+- [Minikube 1.29.0](https://github.com/kubernetes/minikube/releases/tag/v1.20.0)
 - [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
-- [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
+- [Istioctl 1.17.0](https://github.com/istio/istio/releases/tag/1.17.0)
+- [Helm 3.11.1](https://github.com/helm/helm/releases/tag/v3.11.1)
 
 ## Содержание
 
@@ -33,6 +33,50 @@
 - Выполнить задание в отдельной ветке
 - Создать Pull request с изменениями в этот репозиторий
 
+## Разворачивание Istio-кластера
+
+- Добавление необходимых репозиториев в Helm
+```shell
+helm repo add jetstack https://charts.jetstack.io
+helm repo add kiali https://kiali.org/helm-charts
+helm repo update
+```
+
+- Установка стека Prometheus для Kubernetes
+```shell
+helm install --namespace monitoring --create-namespace prometheus prometheus-community/kube-prometheus-stack -f ./prometheus/operator-values.yaml --atomic
+kubectl apply -f ./prometheus/node-ports.yaml
+```
+
+- Установка cert-manager
+```shell
+helm install --namespace cert-manager --create-namespace cert-manager jetstack/cert-manager --set installCRDs=true
+```
+
+- Установка Jaeger
+```shell
+helm install --namespace jaeger-operator --create-namespace jaeger-operator jaegertracing/jaeger-operator -f ./jaeger/operator-values.yaml
+kubectl apply -f ./jaeger/jaeger.yaml
+kubectl apply -f ./jaeger/node-ports.yaml
+```
+
+- Установка оператора Istio средствами istioctl
+```shell
+istioctl operator init
+```
+
+- Разворачивание Istio
+```shell
+kubectl apply -f ./istio/istio.yaml
+```
+
+- Установка Kiali
+```shell
+helm install --namespace kiali-operator --create-namespace kiali-operator kiali/kiali-operator
+kubectl apply -f ./kiali/kiali.yaml
+kubectl apply -f ./kiali/node-ports.yaml
+```
+
 ## Лайфхаки по выполнению задания
 
 Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
@@ -49,15 +93,7 @@
 достаточно применить манифест с указанием конфигурации:
 
 ```shell script
-kubectl apply -f istio/istio-manifest.yaml
-```
-
----
-
-Для выключения шифрования между прокси, нужно применить настройку:
-
-```shell script
-kubectl apply -f istio/defaults.yaml
+kubectl apply -f istio/istio.yaml
 ```
 
 ---

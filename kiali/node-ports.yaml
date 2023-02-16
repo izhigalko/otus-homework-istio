@@ -1,0 +1,18 @@
+# Создаем NP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kiali
+  name: kiali-np
+  namespace: kiali
+spec:
+  ports:
+    - name: http
+      port: 20001
+      protocol: TCP
+      targetPort: 20001
+  selector:
+    app: kiali
+  type: NodePort

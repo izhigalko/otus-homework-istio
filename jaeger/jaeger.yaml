@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jaeger
+  labels:
+    istio-injection: enabled
+
+---
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  namespace: jaeger
+  name: jaeger

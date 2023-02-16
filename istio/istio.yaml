@@ -1,12 +1,3 @@
-# Создать Namespace
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: istio-system
-  labels:
-    istio-injection: disabled
-
 # Создать CRD, использующийся Istio operator'ом, чтобы развернуть Istio
 ---
 apiVersion: install.istio.io/v1alpha1
@@ -19,7 +10,7 @@ spec:
     base: # Базовые настройки. Роли, сервисы, CRD
       enabled: true
 
-    istiod_remote: # Настройки, при которых уровень управления установлен вне кластера
+    istiodRemote: # Настройки, при которых уровень управления установлен вне кластера
       enabled: false
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
@@ -96,7 +87,7 @@ spec:
           enabled: true
 
     sidecarInjectorWebhook:
-      enableNamespacesByDefault: true
+      enableNamespacesByDefault: false # по-умолчанию не инжектим сайдкары везде, где попало
       objectSelector:
         enabled: true
         autoInject: true
