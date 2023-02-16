@@ -88,6 +88,14 @@ kubectl apply -f ./app/app.yaml
 kubectl apply -f ./app/istio-ingress.yaml
 ```
 
+## Тестовая нагрузка приложения
+
+В каталоге k6-scripts находится скрипт для утилиты K6.
+Пример запуска (10 VU в течение 30 секунд):
+```shell
+k6 run ./k6-scripts/load-app.js --vus=10 --duration=30s
+```
+
 ## Лайфхаки по выполнению задания
 
 Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
