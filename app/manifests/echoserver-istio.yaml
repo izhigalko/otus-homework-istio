@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: echoserver-gateway
-  namespace: default
+  namespace: echo-istio
 spec:
   selector:
     istio: ingressgateway
@@ -19,7 +19,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: echoserver-destinationrule
-  namespace: default
+  namespace: echo-istio
 spec:
   host: echoserver
   subsets:
@@ -35,7 +35,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: echoserver-virtualservice
-  namespace: default
+  namespace: echo-istio
 spec:
   hosts:
     - "*"

@@ -11,12 +11,39 @@
 ```https://github.com/istio/istio/releases/tag/1.17.0```
 
 Устанавливаем:
-```.\istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator```
+```.\istioctl operator init --watchedNamespaces istio-system,echoserver-istio --operatorNamespace istio-operator```
 
 Применяем настройки:
 ``` kubectl apply -f istio/istio-manifest.yaml```
 
+Что бы добавить ресурсов, необходимо пересоздать (удалятся все наработки):
+minikube delete
+minikube start --vm-driver=hyperv --cpus=6 --memory=8g
 
+Сертификаты потребовал Jaeger:
+helm install --namespace cert-manager --create-namespace cert-manager jetstack/cert-manager --set installCRDs=true
+Jaeger
+helm install --namespace jaeger-operator --create-namespace jaeger-operator jaegertracing/jaeger-operator -f ./jaeger/operator-values.yaml
+Настраиваем Jaeger
+kubectl apply -f jaeger/jaeger.yaml
+Istio
+./istioctl operator init
+kubectl apply -f istio/istio-manifest.yaml
+
+istioctl install --set profile=demo -y
+
+Prometheus
+helm install -n monitoring -f prometheus/operator-values.yaml prometheus prometheus-community/kube-prometheus-stack
+kubectl apply -f ./prometheus/monitoring-nodeport.yaml
+
+helm install --namespace kiali-operator --create-namespace kiali-operator kiali/kiali-operator
+kubectl apply -f kiali/kiali.yaml
+Grafana:
+minikube service -n monitoring prometheus-grafana-nodeport
+Prometheus
+minikube service -n monitoring prom-prometheus-nodeport
+Открыть kiali:
+minikube service -n kiali kiali-nodeport
 
 
 ## Зависимости

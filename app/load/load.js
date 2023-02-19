@@ -13,7 +13,7 @@ export let options = {
 };
 
 export default () => {
-    http.get(`http://proxy-app.default/?http://echoserver`);
-    http.get(`http://echoserver.default/`);
+    http.get(`http://echoserver.echo-istio/?http://echoserver`);
+    http.get(`http://echoserver.echo-istio/`);
     sleep(1)
 };

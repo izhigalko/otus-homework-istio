@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: load
-  namespace: default
+  namespace: echo-istio
 spec:
   template:
     metadata:
@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: load
-          image: load-otus-demo:1.0
+          image: escadockerhub/load-otus-demo:1.2
           imagePullPolicy: IfNotPresent
       restartPolicy: Never
   backoffLimit: 1

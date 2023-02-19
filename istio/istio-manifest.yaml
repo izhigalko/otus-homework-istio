@@ -5,7 +5,7 @@ kind: Namespace
 metadata:
   name: istio-system
   labels:
-    istio-injection: disabled
+    istio-injection: enabled
 
 # Создать CRD, использующийся Istio operator'ом, чтобы развернуть Istio
 ---
@@ -19,7 +19,7 @@ spec:
     base: # Базовые настройки. Роли, сервисы, CRD
       enabled: true
 
-    istiod_remote: # Настройки, при которых уровень управления установлен вне кластера
+    istiodRemote: # Настройки, при которых уровень управления установлен вне кластера
       enabled: false
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
