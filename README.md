@@ -1,5 +1,24 @@
 # Практика к занятию по теме "Service mesh на примере Istio"
 
+## ДЗ
+
+Добавляем namespaces:
+
+```kubectl apply -f namespaces.yaml```
+
+## Установка Istio
+Качаем нужную версию:
+```https://github.com/istio/istio/releases/tag/1.17.0```
+
+Устанавливаем:
+```.\istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator```
+
+Применяем настройки:
+``` kubectl apply -f istio/istio-manifest.yaml```
+
+
+
+
 ## Зависимости
 
 Для выполнения задания вам потребуется установить зависимости:

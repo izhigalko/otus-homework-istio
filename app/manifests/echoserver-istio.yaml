@@ -1,0 +1,57 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: echoserver-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: echoserver-destinationrule
+  namespace: default
+spec:
+  host: echoserver
+  subsets:
+    - name: v1
+      labels:
+        version: "1"
+    - name: v2
+      labels:
+        version: "2"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: echoserver-virtualservice
+  namespace: default
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - echoserver-gateway
+  http:
+    - route:
+        - destination:
+            subset: v1
+            host: echoserver
+            port:
+              number: 80
+          weight: 50
+        - destination:
+            subset: v2
+            host: echoserver
+            port:
+              number: 80
+          weight: 50
