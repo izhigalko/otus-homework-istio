@@ -3,7 +3,7 @@ kind: Namespace
 metadata:
   name: echo-istio
   labels:
-    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса disabled
+    istio-injection: disabled # Включаем инжект сайдкаров Istio для неймспейса disabled
 
 ---
 apiVersion: v1
