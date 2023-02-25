@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eterna1ity-service
+  namespace: my-app
+spec:
+  selector:
+    app: eterna1ity
+  ports:
+    - port: 80
+      targetPort: 80
