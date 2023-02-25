@@ -1,88 +1,87 @@
-# Практика к занятию по теме "Service mesh на примере Istio"
-
-## Зависимости
-
-Для выполнения задания вам потребуется установить зависимости:
-
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
-- [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
-- [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
-
-## Содержание
-
-* [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
-
-## Задачи
-
-Задание состоит из этапов
-
-- Развернуть Minikube
-- Развернуть Istio c Ingress gateway
-- Развернуть две версии приложения с использованием Istio
-- Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
-- Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
-
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
-
-## Инструкция по выполнению задания
-
-- Сделать форк этого репозитория на Github
-- Выполнить задание в отдельной ветке
-- Создать Pull request с изменениями в этот репозиторий
-
-## Лайфхаки по выполнению задания
-
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
-
----
-
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
-
----
-
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
-
-```shell script
-kubectl apply -f istio/istio-manifest.yaml
+### Создаём алиасы:
+```shell
+alias mi='minikube'
+alias ku='kubectl'
 ```
 
----
-
-Для выключения шифрования между прокси, нужно применить настройку:
-
-```shell script
-kubectl apply -f istio/defaults.yaml
+### Запускаем minikube:
+```shell
+minikube start --driver hyperv --cpus=4 --memory=8g --cni=flannel --kubernetes-version="v1.19.0"
 ```
 
----
-
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
-
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
+### Установить Istio:
+```shell
+istioctl install --set profile=default -y
 ```
 
-Использовать специальную команду для доступа к сервису:
-
-```yaml
-minikube service -n <namespace> <service>
+### Создаём namespace:
+```shell
+ku apply -f namespaces.yaml
 ```
+
+### Разворачиваем Jaeger
+Jaeger - решение трассировки. Компоненты Istio, такие как: sidecar-контейнер, gateway, отправляют данные запросов в систему. Таким образом получается полная трассировка запроса.
+
+Добавить репозиторий в Helm:
+```shell
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update
+```
+Установить оператор, разворачивающий Jaeger и развернуть Jaeger:
+```shell
+helm install --version "2.19.0" -n jaeger-operator -f jaeger/operator-values.yaml jaeger-operator jaegertracing/jaeger-operator
+
+kubectl apply -f jaeger/jaeger.yaml
+
+minikube service -n jaeger jaeger-query-nodeport
+```
+
+### Разворачиваем Prometheus
+Prometheus - система мониторинга. С помощью неё собираются метрики Service mesh.
+Добавить репозиторий в Helm:
+```shell
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo update
+```
+Развернуть решение по мониторингу на основе Prometheus:
+```shell
+helm install --version "13.7.2" -n monitoring -f prometheus/operator-values.yaml prometheus prometheus-community/kube-prometheus-stack
+```
+Добавить сервис типа NodePort для прямого доступа к Prometheus и Grafana:
+```shell
+kubectl apply -f prometheus/monitoring-nodeport.yaml
+```
+
+Открыть web-интерфейс Prometheus:
+```shell
+minikube service -n monitoring prom-prometheus-nodeport
+```
+
+### Устанавливаем Kiali
+
+```shell
+helm repo add kiali https://kiali.org/helm-charts
+helm repo update
+helm install --version "1.33.1" -n kiali-operator -f kiali/operator-values.yaml kiali-operator kiali/kiali-operator
+kubectl apply -f kiali/kiali.yaml
+minikube service -n kiali kiali-nodeport
+```
+
+### Применяем манифесты приложения:
+```shell
+kubectl apply -f manifests/
+```
+
+### Выполняем несколько запросов в IngressGateway (для minikube)
+#### Получаем nodePort
+```shell
+kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
+```
+
+### Добавляем route на хост-машине к сервису:
+```shell
+minikube tunnel
+```
+
+### Нагружаем и смотрим распределение.

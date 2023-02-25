@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: eterna1ity-virtualservice
+  namespace: my-app
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - eterna1ity-gateway
+  http:
+    - route:
+        - destination:
+            subset: v1
+            host: eterna1ity-service
+            port:
+              number: 80
+          weight: 50
+        - destination:
+            subset: v2
+            host: eterna1ity-service
+            port:
+              number: 80
+          weight: 50
