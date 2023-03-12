@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hw5-service
+  namespace: default
+spec:
+  selector:
+    app: hw5
+  ports:
+    - port: 80
+      targetPort: 80
+      name: "http"  # Istio требует явного указания протокола при определенных настройках
