@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otus-http-server-v1
+  labels:
+    app: otus-http-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otus-http-server
+  template:
+    metadata:
+      labels:
+        app: otus-http-server
+        version: v1
+    spec:
+      containers:
+      - name: otus-http-server
+        image: arsenteroganisyan/otus-http-server:v3.1
+        ports:
+        - containerPort: 8000
