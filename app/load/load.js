@@ -13,6 +13,6 @@ export let options = {
 };
 
 export default () => {
-    http.get(`http://hw5-service.default/`);
+    http.get(`http://istio-ingressgateway`);
     sleep(1)
 };
