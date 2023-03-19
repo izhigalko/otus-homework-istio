@@ -83,6 +83,7 @@ spec:
 
 Использовать специальную команду для доступа к сервису:
 
+
 ```yaml
 minikube service -n <namespace> <service>
 ```

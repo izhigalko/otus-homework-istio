@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver
+  namespace: default
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+      appProtocol: http
+  selector:
+    app: echoserver
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-app
+  namespace: default
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+      appProtocol: http
+  selector:
+    app: proxy-app
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackhole
+  namespace: default
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+      appProtocol: http
