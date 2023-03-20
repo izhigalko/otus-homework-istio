@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: otus-http-service
+spec:
+  hosts:
+    - example.otushomework
+  gateways:
+    - ext-host-gwy
+  http:
+    - match:
+        - authority:
+            exact: example.otushomework
+        - uri:
+            prefix: /traffic
+      route:
+        - destination:
+            host: otus-http-service
+            subset: v1
+          weight: 50
+        - destination:
+            host: otus-http-service
+            subset: v2
+          weight: 50
