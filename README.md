@@ -1,19 +1,19 @@
-# Практика к занятию по теме "Service mesh на примере Istio"
+# Домашняя работа "Service mesh на примере Istio"
 
 ## Зависимости
 
-Для выполнения задания вам потребуется установить зависимости:
+Для выполнения задания использовались следующие зависимости:
 
-- [Minikube 1.13.1](https://github.com/kubernetes/minikube/releases/tag/v1.13.1)
-- [Kubectl 0.19.2](https://github.com/kubernetes/kubectl/releases/tag/v0.19.2)
-- [Istioctl 1.7.3](https://github.com/istio/istio/releases/tag/1.9.0)
+- [Minikube 1.29.0](https://github.com/kubernetes/minikube/releases/tag/v1.29.0)
+- [Kubectl 0.26.1](https://github.com/kubernetes/kubectl/releases/tag/v0.26.1)
+- [Istioctl 1.17.0](https://github.com/istio/istio/releases/tag/1.17.0)
 - [Heml 3.3.4](https://github.com/helm/helm/releases/tag/v3.3.4)
 
 ## Содержание
 
 * [Задачи](#Задачи)
-* [Инструкция по выполнению задания](#Инструкция-по-выполнению-задания)
-* [Лайфхаки по выполнению задания](#Лайфхаки-по-выполнению-задания)
+* [Инструкция по выполнению задания](#Инструкция по выполнению задания)
+
 
 ## Задачи
 
@@ -25,64 +25,85 @@
 - Настроить балансировку трафика между версиями приложения на уровне Gateway 50% на 50%
 - Сделать снимок экрана с картой сервисов в Kiali с примеров вызова двух версии сервиса
 
-![Пример карты сервисов с балансировкой трафика между версиями](kiali-map-example.png)
-
 ## Инструкция по выполнению задания
 
-- Сделать форк этого репозитория на Github
-- Выполнить задание в отдельной ветке
-- Создать Pull request с изменениями в этот репозиторий
-
-## Лайфхаки по выполнению задания
-
-Для выполнения задания вы можете воспользоваться [материалами демо](https://github.com/izhigalko/otus-demo-istio).
-
----
-
-Спецификацию IstioOperator можно посмотреть
-[в документации Istio](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#IstioOperatorSpec)
-или можно посмотреть [исходники манифестов, исполняемых оператором](https://github.com/istio/istio/tree/master/manifests).
-
----
-
-Если вы хотите изменить текущую конфигурацию Istio,
-достаточно применить манифест с указанием конфигурации:
+1. Создаём необходимые неймспейсы:
 
 ```shell script
-kubectl apply -f istio/istio-manifest.yaml
+kubectl apply -f namespaces.yaml
 ```
 
----
-
-Для выключения шифрования между прокси, нужно применить настройку:
+2. Добавляем необходимые репозитории helm
 
 ```shell script
-kubectl apply -f istio/defaults.yaml
+helm repo add jetstack https://charts.jetstack.io
+helm repo add stable https://charts.helm.sh/stable
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo add kiali https://kiali.org/helm-charts
+helm repo update
 ```
 
----
+3. Разворачиваем Jaeger
 
-Для доступа к какому-либо сервису с хоста можно использовать тип NodePort в сервисе:
-
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: test
-  namespace: default
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 32080
-      targetPort: 8080
-  selector:
-    app: test
+```shell script
+helm install --namespace cert-manager cert-manager jetstack/cert-manager --set installCRDs=true
+helm install --namespace jaeger-operator jaeger-operator jaegertracing/jaeger-operator -f ./jaeger/operator-values.yaml
+kubectl apply -f jaeger/jaeger.yaml
+```
+```shell script
+#Выполняем проверку
+kubectl get po -n jaeger -l app.kubernetes.io/instance=jaeger #pod jaeger-* в статусе running
+minikube service -n jaeger jaeger-query-nodeport #доступность web-ui jaeger
 ```
 
-Использовать специальную команду для доступа к сервису:
+4. Разворачиваем Prometheus + grafana
 
-```yaml
-minikube service -n <namespace> <service>
+```shell script
+helm install --namespace monitoring  prometheus prometheus-community/kube-prometheus-stack -f ./prometheus/operator-values.yaml --atomic
+kubectl apply -f prometheus/monitoring.yaml
 ```
+```shell script
+#Выполняем проверку
+kubectl get po -n monitoring #pods в статусе running
+minikube service -n monitoring prometheus-grafana-nodeport #доступность web-ui grafana
+minikube service -n monitoring prom-prometheus-nodeport #доступность web-ui prometheus
+```
+
+4. Разворачиваем Istio
+
+```shell script
+istioctl operator init
+kubectl apply -f ./istio/istio.yaml
+```
+```shell script
+#Выполняем проверку
+kubectl get all -n istio-system -l istio.io/rev=default 
+```
+
+5. Добавляем аддон Kiali к Istio
+
+```shell script
+helm install -n kiali-operator kiali-operator kiali/kiali-operator
+kubectl apply -f ./kiali/kiali.yaml
+```
+```shell script
+#Выполняем проверку
+kubectl get po -n istio-system -l app.kubernetes.io/name=kiali #pod kiali-* в статусе running
+minikube service -n istio-system kiali-nodeport #доступность web-ui kiali
+```
+
+5. Разворачиваем две версии приложения
+
+```shell script
+kubectl apply -n otus-ms-scala -f ./app/app.yaml
+kubectl apply -f ./app/istio-ingress.yaml
+```
+```shell script
+#Выполняем проверку
+kubectl get all -n otus-ms-scala
+minikube service -n otus-ms-scala hello-service
+```
+
+## Результат
+![Пример карты сервисов с балансировкой трафика между версиями](img.png)
