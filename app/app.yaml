@@ -1,0 +1,105 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-0.0.1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-app
+      version: "0.0.1"
+  template:
+    metadata:
+      labels:
+        app: hello-app
+        version: "0.0.1"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: hello
+          image: auwerk/otus-service-hello:v1.0.0
+          ports:
+            - name: web
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: web
+            initialDelaySeconds: 5
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: web
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: web
+            failureThreshold: 30
+            periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-0.0.2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-app
+      version: "0.0.2"
+  template:
+    metadata:
+      labels:
+        app: hello-app
+        version: "0.0.2"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: hello
+          image: auwerk/otus-service-hello:v1.0.1
+          ports:
+            - name: web
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: web
+            initialDelaySeconds: 5
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: web
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: web
+            failureThreshold: 30
+            periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+spec:
+  selector:
+    app: hello-app
+  ports:
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: web
+  type: NodePort

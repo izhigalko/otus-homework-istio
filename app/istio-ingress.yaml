@@ -1,0 +1,54 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: hello-gw
+  namespace: otus-ms-scala
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: hello-dr
+  namespace: otus-ms-scala
+spec:
+  host: hello-service
+  subsets:
+    - name: "0.0.1"
+      labels:
+        version: "0.0.1"
+    - name: "0.0.2"
+      labels:
+        version: "0.0.2"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: hello-vs
+  namespace: otus-ms-scala
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - hello-gw
+  http:
+    - route:
+        - destination:
+            host: hello-service
+            subset: "0.0.1"
+          weight: 50
+        - destination:
+            host: hello-service
+            subset:  "0.0.2"
+          weight: 50
