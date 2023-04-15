@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: otus-5-virtual-service
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - otus-5-gateway
+  http:
+    - route:
+      - destination:
+          host: otus-5-service
+          subset: v1
+        weight: 50
+      - destination:
+          host: otus-5-service
+          subset: v2
+        weight: 50
