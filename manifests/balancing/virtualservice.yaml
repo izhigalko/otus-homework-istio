@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: health-vs
+  namespace: health
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - health-gw
+  http:
+    - route:
+        - destination:
+            host: health-service
+            subset: v1
+          weight: 50
+        - destination:
+            host: health-service
+            subset: v2
+          weight: 50
