@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: health-v1
+  namespace: health
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: health-app
+      version: v1
+  template:
+    metadata:
+      name: health-v1
+      labels:
+        app: health-app
+        version: v1
+    spec:
+      containers:
+        - image: astrviktor/health:1.0.0
+          name: health
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+            periodSeconds: 30
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 2
+            initialDelaySeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "16Mi"
+            limits:
+              cpu: "200m"
+              memory: "64Mi"
+
