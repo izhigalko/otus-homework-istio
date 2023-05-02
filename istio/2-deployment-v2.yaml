@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: httpd
+    version: v2
+    istio: monitor
+  name: httpd-v2
+  namespace: production
+spec:
+  containers:
+  - image: httpd
+    name: httpd
+    resources: {}
+    volumeMounts:
+    - mountPath: /usr/local/apache2/htdocs
+      name: index-html
+  dnsPolicy: ClusterFirst
+  initContainers:
+  - command:
+    - sh
+    - -c
+    - mkdir /usr/local/apache2/htdocs;( echo '<html> <body> <h1>This is version V2!</h1>
+      </body></html>' ) > /usr/local/apache2/htdocs/index.html
+    image: busybox
+    name: busybox
+    volumeMounts:
+    - mountPath: /usr/local/apache2/htdocs
+      name: index-html
+  restartPolicy: Always
+  volumes:
+  - emptyDir: {}
+    name: index-html
