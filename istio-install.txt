@@ -1,0 +1,18 @@
+0. The guide of an installation https://www.youtube.com/watch?v=H4YIKwAQMKk&ab_channel=AntonPutra
+
+1. helm repo add istio https://istio-release.storage.googleapis.com/charts
+2. helm repo update
+3. helm install my-istio-base-release -n istio-system --create-namespace istio/base --set global.istioNamespace=istio-system
+4. helm install my-istiod-release -n istio-system --create-namespace istio/istiod --set telemetry.enabled=true --set global.istioNamespace=istio-system --set meshConfig.ingressService=istio-gateway --set meshConfig.ingressSelector=gateway
+5. helm install gateway -n istio-ingress --create-namespace istio/gateway
+6. kubectl apply --server-side -f monitoring/prometheus-operator-crds
+7. kubectl apply -f monitoring/monitoring-ns.yaml
+8. kubectl apply -R -f monitoring/prometheus-operator
+9. kubectl apply -R -f monitoring/prometheus
+10.kubectl apply -R -f monitoring/grafana
+
+
+
+kubectl port-forward svc/gateway -n istio-ingress 8080:80
+kubectl port-forward svc/kiali -n istio-system 20001
+
