@@ -1,0 +1,6 @@
+apiVersion: v2
+name: App-dz5
+description: Otus dz5 helm chart
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

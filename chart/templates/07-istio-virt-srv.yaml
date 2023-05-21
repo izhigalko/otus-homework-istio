@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: dz5-virt-srv
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - dz5-gw
+  http:
+    - route:
+      - destination:
+          host: dz5-service
+          subset: v1
+        weight: 50
+      - destination:
+          host: dz5-service
+          subset: v2
+        weight: 50
