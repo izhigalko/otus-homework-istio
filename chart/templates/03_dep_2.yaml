@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dz5-dep-2
+spec:
+  replicas: {{ .Values.app.replicaCount}}
+  selector:
+    matchLabels:
+      app: dz5-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: dz5-app
+        version: v2
+    spec:
+      containers:
+      - name: dz5-app
+        image: {{ .Values.app.image}}:2.0.0
+        imagePullPolicy: Always
+        ports:
+        - name: web
+          containerPort: {{ .Values.app.port}}
+        envFrom:
+          - configMapRef:
+              name: app-config

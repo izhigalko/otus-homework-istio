@@ -1,0 +1,4 @@
+app:
+  replicaCount: "1"
+  image: dmitryavdonin/dz5-app
+  port: 8000
