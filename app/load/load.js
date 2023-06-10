@@ -13,6 +13,6 @@ export let options = {
 };
 
 export default () => {
-    http.get(`http://proxy-app.default/?url=http://echoserver`);
+    http.get(`http://arch.homework`);
     sleep(1)
 };

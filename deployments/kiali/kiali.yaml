@@ -1,0 +1,11 @@
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  namespace: kiali-operator
+  name: kiali
+spec:
+  istio_namespace: istio-system
+  deployment:
+    namespace: kiali-operator
+  auth:
+    strategy: anonymous

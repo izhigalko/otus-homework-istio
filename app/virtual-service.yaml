@@ -5,6 +5,8 @@ metadata:
 spec:
   hosts:
     - echoserver
+  gateways:
+    - app-gateway
   http:
     - route:
         - destination:
@@ -19,34 +21,3 @@ spec:
             port:
               number: 80
           weight: 50
-
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: proxy-app-virtualservice
-spec:
-  hosts:
-    - arch.homework
-  gateways:
-    - proxy-app-gateway
-  http:
-    - route:
-        - destination:
-            host: proxy-app
-            port:
-              number: 80
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: blackhole-virtualservice
-spec:
-  hosts:
-    - arch.homework
-  http:
-    - route:
-        - destination:
-            host: blackhole
-            port:
-              number: 80

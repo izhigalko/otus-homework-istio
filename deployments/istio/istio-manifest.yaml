@@ -75,9 +75,9 @@ spec:
           requests:
             cpu: 50m
             memory: 64Mi
-      tracer:
-        zipkin:
-          address: "jaeger-collector.jaeger:9411"
+      # tracer:
+      #   zipkin:
+      #     address: "jaeger-collector.jaeger:9411"
 
     istio_cni:
       enabled: true
