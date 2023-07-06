@@ -1,0 +1,27 @@
+app:
+  name: homework3
+  host: arch.homework
+  namespace: default
+  maxSurge: 1
+  maxUnavailable: 1
+  replicaCount: 2
+  image:
+    repository: "kanutan93/msa-homework"
+    tag: "1.4.4"
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 400m
+      memory: 512Mi
+    requests:
+      cpu: 400m
+      memory: 512Mi
+  service:
+    name: http-traffic
+    port: 8080
+    targetPort: 8080
+
+
+
+
+

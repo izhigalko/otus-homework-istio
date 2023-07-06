@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.app.name }}-service-monitor
+  labels:
+    app: {{ .Values.app.name }}
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  namespaceSelector:
+    any: true
+  endpoints:
+    - port: {{ .Values.app.service.name }}
+      interval: 10s
+      path: "/actuator/prometheus"
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.app.name }}-db-service-monitor
+  labels:
+    app: {{ .Values.app.name }}
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: homework3-db
+  namespaceSelector:
+    any: true
+  endpoints:
+    - port: http-metrics
+      interval: 10s
+      path: "/metrics"
