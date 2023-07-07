@@ -21,3 +21,11 @@ metadata:
   name: kiali-operator
   labels:
     istio-injection: disabled
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+  labels:
+    istio-injection: disabled
