@@ -5,6 +5,7 @@ app:
   maxSurge: 1
   maxUnavailable: 1
   replicaCount: 2
+  version: "v1"
   image:
     repository: "kanutan93/msa-homework"
     tag: "1.4.4"

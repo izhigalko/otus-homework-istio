@@ -15,6 +15,12 @@ metadata:
 spec:
   deployment:
     image_version: "v1.33.1"
+    view_only_mode: true
+    accessible_namespaces:
+      - istio-system
+      - default
+      - jaeger
+      - monitoring
   istio_namespace: "istio-system"
   istio_component_namespaces:
     prometheus: monitoring

@@ -4,11 +4,13 @@ metadata:
   name: {{ .Values.app.name }}-service-monitor
   labels:
     app: {{ .Values.app.name }}
+    version: {{ .Values.app.version }}
     release: prometheus
 spec:
   selector:
     matchLabels:
       app: {{ .Values.app.name }}
+      version: {{ .Values.app.version }}
   namespaceSelector:
     any: true
   endpoints:

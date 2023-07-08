@@ -29,3 +29,11 @@ metadata:
   name: cert-manager
   labels:
     istio-injection: disabled
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled # Включаем инжект сайдкаров Istio для неймспейса
