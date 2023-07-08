@@ -26,3 +26,9 @@ helm repo update
 helm install --version "1.70.0" -n kiali-operator -f kiali/operator-values.yaml kiali-operator kiali/kiali-operator
 kubectl apply -f kiali/kiali.yaml
 kubectl get po -n kiali -l app.kubernetes.io/name=kiali
+
+helm install homework3-db oci://registry-1.docker.io/bitnamicharts/postgresql \
+--set global.postgresql.auth.username=test,global.postgresql.auth.password=password,global.postgresql.auth.database=homework3 \
+--set metrics.enabled=true
+
+helm install app ./app/Helm
