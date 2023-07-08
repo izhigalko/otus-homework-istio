@@ -11,6 +11,6 @@ spec:
     version: {{ .Values.app.version }}
   ports:
     - protocol: TCP
-      name: {{ .Values.app.service.name }}
+      name: http
       port: {{ .Values.app.service.port }}
       targetPort: {{ .Values.app.service.targetPort }}

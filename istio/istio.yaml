@@ -24,7 +24,7 @@ spec:
 
     ingressGateways: # Общая точка для входа трафика в Service mesh
       - name: istio-ingressgateway
-        enabled: false
+        enabled: true
 
     egressGateways: # Общаая точка для выхода трафика из Service mesh
       - name: istio-egressgateway
@@ -1004,3 +1004,36 @@ metadata:
     grafana_dashboard: "1"
   name: istio-services-grafana-dashboards
   namespace: monitoring
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: arch-homework-gateway
+spec:
+  selector:
+    istio: ingressgateway # use the default IngressGateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "arch.homework"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: arch-homework-vs
+spec:
+  hosts:
+    - arch.homework
+  http:
+    - route:
+        - destination:
+            host: homework3-v1-service.default.svc.cluster.local
+          weight: 50
+        - destination:
+            host: homework3-v2-service.default.svc.cluster.local
+          weight: 50
+  gateways:
+    - arch-homework-gateway
