@@ -1,4 +1,4 @@
 ---
 allowAdHocKialiImage: true
 image:
-  tag: "v1.33.1"
+  tag: "v1.70.0"

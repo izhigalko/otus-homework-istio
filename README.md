@@ -23,6 +23,6 @@ kubectl apply -f istio/disable-mtls.yaml
 
 helm repo add kiali https://kiali.org/helm-charts
 helm repo update
-helm install --version "1.33.1" -n kiali-operator -f kiali/operator-values.yaml kiali-operator kiali/kiali-operator
+helm install --version "1.70.0" -n kiali-operator -f kiali/operator-values.yaml kiali-operator kiali/kiali-operator
 kubectl apply -f kiali/kiali.yaml
 kubectl get po -n kiali -l app.kubernetes.io/name=kiali
