@@ -17,9 +17,8 @@ helm install -n monitoring prometheus -f ./prometheus/operator-values.yaml prome
 kubectl apply -f prometheus/monitoring-nodeport.yaml
 
 istioctl operator init --watchedNamespaces istio-system --operatorNamespace istio-operator
-kubectl apply -f istio/istio.yaml
+kubectl apply -f istio/.
 kubectl get all -n istio-system -l istio.io/rev=default
-kubectl apply -f istio/disable-mtls.yaml
 
 helm repo add kiali https://kiali.org/helm-charts
 helm repo update
