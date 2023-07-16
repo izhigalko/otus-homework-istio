@@ -19,7 +19,7 @@ app:
       memory: 512Mi
   service:
     name: http
-    port: 80
+    port: 8080
     targetPort: 8080
 
 
