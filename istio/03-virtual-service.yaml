@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: arch-homework-vs
+spec:
+  hosts:
+    - "*"
+  http:
+    - route:
+        - destination:
+            host: homework3-v1.default.svc.cluster.local
+            port:
+              number: 8080
+          weight: 50
+        - destination:
+            host: homework3-v2.default.svc.cluster.local
+            port:
+              number: 8080
+          weight: 50
+  gateways:
+    - arch-homework-gateway
