@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: hw-5-app-deployment-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw-5-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hw-5-app
+        version: v1
+    spec:
+      containers:
+        - name: hw-5-app
+          image: nikfedoseev/microservice-architecture-homeworks:homework5
+          ports:
+            - containerPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: hw-5-app-deployment-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw-5-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hw-5-app
+        version: v2
+    spec:
+      containers:
+        - name: hw-5-app
+          image: nikfedoseev/microservice-architecture-homeworks:homework5
+          ports:
+            - containerPort: 8000
