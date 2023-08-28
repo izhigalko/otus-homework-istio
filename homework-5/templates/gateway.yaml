@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+  helm install \
+  --set cr.create=true \
+  --set cr.namespace=istio-system \
+  --set spec.external_services.prometheus.url=http://prometheus-kube-prometheus-prometheus.default.svc.cluster.local:9090 \
+  --namespace kiali-operator \
+  --create-namespace \
+  kiali-operator \
+  kiali/kiali-operator

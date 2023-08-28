@@ -1,0 +1,39 @@
+replicaCount: 1
+
+image:
+  pullPolicy: IfNotPresent
+  repository: onbehalfofme/homework
+  tag: latest
+
+service:
+  type: NodePort
+  port: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /otusapp/danila(/|$)(.*)
+          pathType: Prefix
+          backend:
+            service:
+              name: otus-homework
+              port:
+                number: 8000
+  tls: []
+
+resources:
+requests:
+  memory: "1G"
+  cpu: "1000m"
+  limits:
+    memory: "2G"
+    cpu: "2000m"
+
+fullnameOverride: otus-homework
+  

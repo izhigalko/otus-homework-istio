@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: destination-rule
+  namespace: default
+spec:
+  host: {{ include "otus-homework-3.fullname" . }}
+  subsets:
+    - name: v1
+      labels:
+        {{- include "otus-homework-3.selectorLabels" . | nindent 8 }}
+        version: v1
+    - name: v2
+      labels:
+        {{- include "otus-homework-3.selectorLabels" . | nindent 8 }}
+        version: v2

@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service
+  namespace: default
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - gateway
+  http:
+    - route:
+        - destination:
+            host: {{ include "otus-homework-3.fullname" . }}
+            subset: v1
+            port:
+              number: 8000
+          weight: 50
+        - destination:
+            host: {{ include "otus-homework-3.fullname" . }}
+            subset: v2
+            port:
+              number: 8000
+          weight: 50
