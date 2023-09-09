@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name:  ms-hw-5-virtual-service
+  namespace: default
+spec:
+  hosts:
+    - "*"
+  gateways:
+    -  ms-hw-5-gateway
+  http:
+    - route:
+        - destination:
+            host:  ms-hw-5-service
+            subset: v1
+          weight: 50
+        - destination:
+            host:  ms-hw-5-service
+            subset: v2
+          weight: 50

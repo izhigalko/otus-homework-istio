@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ms-hw-5-virtual-service
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - ms-hw-5-istio-ingress-gateway
+  http:
+    - route:
+        - destination:
+            host: echo-service
+            subset: v1
+            port:
+              number: 80
+          weight: 50
+        - destination:
+            host: echo-service
+            subset: v2
+            port:
+              number: 80
+          weight: 50
