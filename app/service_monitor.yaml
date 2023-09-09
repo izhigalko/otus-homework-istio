@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: proxy-app
+  namespace: default
+  labels:
+    app: proxy-app
+spec:
+  endpoints:
+    - port: http
+      path: ''
+      scheme: http
+      interval: 5s
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      app: proxy-app

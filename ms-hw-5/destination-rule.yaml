@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: ms-hw-5-destination-rule
+spec:
+  host: echo-service
+  subsets:
+  - name: v1
+    labels:
+      app: echo-service
+      version: v1
+  - name: v2
+    labels:
+      app: echo-service
+      version: v2

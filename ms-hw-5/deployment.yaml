@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: ms-hw-5-deployment-1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      release: ist
+  template:
+    metadata:
+      labels:
+        app: echo-service
+        release: ist
+        version: v1
+    spec:
+      containers:
+        - name: ms-hw-5-echo
+          image: kpolyanichko/proxy-app:latest
+          ports:
+            - containerPort: 8080
+#          livenessProbe:
+#            httpGet:
+#              path: /health
+#              port: 8080
+#            initialDelaySeconds: 3
+#            periodSeconds: 3
+#          readinessProbe:
+#            httpGet:
+#              path: /health
+#              port: 8080
+#            initialDelaySeconds: 3
+#            periodSeconds: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: ms-hw-5-deployment-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      release: ist
+  template:
+    metadata:
+      labels:
+        app: echo-service
+        release: ist
+        version: v2
+    spec:
+      containers:
+        - name: ms-hw-5-echo
+          image: kpolyanichko/proxy-app:latest
+          ports:
+            - containerPort: 8080
+#          livenessProbe:
+#            httpGet:
+#              path: /health
+#              port: 8080
+#            initialDelaySeconds: 3
+#            periodSeconds: 3
+#          readinessProbe:
+#            httpGet:
+#              path: /health
+#              port: 8080
+#            initialDelaySeconds: 3
+#            periodSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-service
+  labels:
+    app: echo-service
+    release: ist
+spec:
+  selector:
+    app: echo-service
+    release: ist
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
